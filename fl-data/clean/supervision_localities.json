@@ -1,0 +1,86 @@
+[
+  {
+    "id": "ALL",
+    "label": "All Offices"
+  },
+  {
+    "id": "BARTOW",
+    "label": "Bartow"
+  },
+  {
+    "id": "CLEARWATER",
+    "label": "Clearwater"
+  },
+  {
+    "id": "DAYTONA_BEACH",
+    "label": "Daytona Beach"
+  },
+  {
+    "id": "FT_LAUDERDALE",
+    "label": "Fort Lauderdale"
+  },
+  {
+    "id": "FT_MYERS",
+    "label": "Fort Myers"
+  },
+  {
+    "id": "FT_PIERCE",
+    "label": "Fort Pierce"
+  },
+  {
+    "id": "GAINESVILLE",
+    "label": "Gainesville"
+  },
+  {
+    "id": "JACKSONVILLE",
+    "label": "Jacksonville"
+  },
+  {
+    "id": "KEY_WEST",
+    "label": "Key West"
+  },
+  {
+    "id": "LAKE_CITY",
+    "label": "Lake City"
+  },
+  {
+    "id": "MIAMI",
+    "label": "Miami"
+  },
+  {
+    "id": "ORLANDO",
+    "label": "Orlando"
+  },
+  {
+    "id": "PANAMA_CITY",
+    "label": "Panama City"
+  },
+  {
+    "id": "PENSACOLA",
+    "label": "Pensacola"
+  },
+  {
+    "id": "SANFORD",
+    "label": "Sanford"
+  },
+  {
+    "id": "SARASOTA",
+    "label": "Sarasota"
+  },
+  {
+    "id": "TALLAHASSEE",
+    "label": "Tallahassee"
+  },
+  {
+    "id": "TAMPA",
+    "label": "Tampa"
+  },
+  {
+    "id": "TAVARES",
+    "label": "Tavares"
+  },
+  {
+    "id": "WEST_PALM_BEACH",
+    "label": "West Palm Beach"
+  }
+]

@@ -21,7 +21,9 @@ import React from "react";
 import type PopulationBreakdownByLocationMetric from "../contentModels/PopulationBreakdownByLocationMetric";
 import type SentenceTypeByLocationMetric from "../contentModels/SentenceTypeByLocationMetric";
 import type SupervisionSuccessRateMetric from "../contentModels/SupervisionSuccessRateMetric";
-import { Dropdown } from "../UiLibrary";
+import { Dropdown, SearchableDropdown } from "../UiLibrary";
+
+const SEARCHABLE_THRESHOLD = 12;
 
 type LocalityFilterSelectProps = {
   metric:
@@ -46,6 +48,22 @@ const LocalityFilterSelect: React.FC<LocalityFilterSelectProps> = ({
       metric.localityLabels.label === "Judicial District")
   ) {
     return null;
+  }
+
+  const { entries } = metric.localityLabels;
+  // long or sectioned lists get search and group headings; short lists keep the simple menu
+  if (
+    entries.length > SEARCHABLE_THRESHOLD ||
+    entries.some(({ group }) => group)
+  ) {
+    return (
+      <SearchableDropdown
+        label={metric.localityLabels.label}
+        onChange={onChange}
+        options={entries}
+        selectedId={metric.localityId}
+      />
+    );
   }
 
   return (

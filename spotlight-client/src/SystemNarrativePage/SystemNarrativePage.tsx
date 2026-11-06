@@ -27,6 +27,7 @@ import {
 } from "../UiLibrary";
 import { NarrativeLayout, StickySection } from "../NarrativeLayout";
 import MetricVizMapper from "../MetricVizMapper";
+import SyntheticDataNotice from "../UiLibrary/SyntheticDataNotice";
 
 const SystemNarrativePage: React.FC<{
   narrative: SystemNarrative;
@@ -55,6 +56,7 @@ const SystemNarrativePage: React.FC<{
                     <NarrativeSectionTitle>
                       {section.title}
                     </NarrativeSectionTitle>
+                    <SyntheticDataNotice dataSource={section.dataSource} />
                     <NarrativeSectionBody>
                       {HTMLReactParser(section.body)}
                     </NarrativeSectionBody>

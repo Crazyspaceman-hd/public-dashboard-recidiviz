@@ -40,6 +40,7 @@ import {
 import BarChartPair from "../charts/BarChartPair";
 import RaceOrEthnicityFilterSelect from "./RaceOrEthnicityFilterSelect";
 import SupervisionTypeFilterSelect from "./SupervisionTypeFilterSelect";
+import SyntheticDataNotice from "../UiLibrary/SyntheticDataNotice";
 
 const Wrapper = styled.div`
   min-height: 100vh;
@@ -133,6 +134,7 @@ const RacialDisparitiesNarrativePage: React.FC<RacialDisparitiesNarrativePagePro
                         <NarrativeSectionTitle>
                           {section.title}
                         </NarrativeSectionTitle>
+                        <SyntheticDataNotice dataSource={section.dataSource} />
                         <NarrativeSectionBody>
                           {HTMLReactParser(pupa(section.body, templateData))}
                         </NarrativeSectionBody>

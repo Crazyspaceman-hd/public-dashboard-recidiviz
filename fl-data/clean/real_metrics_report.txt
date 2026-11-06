@@ -1,0 +1,49 @@
+People in prison roots: 576,253 (92,409 in custody now)
+Snapshot date (latest admission recorded): 2026-11-01
+Stays kept: 1,142,556 after merging 4,246 back-to-back or overlapping stay rows (gap <= 1 day)
+  stay: admission date missing or placeholder (excluded): 2
+  stay: released before admitted (excluded): 2
+  stay: released person with open stay (excluded): 54
+Monthly population: 2006-12-01 to 2026-11-01 (240 months), 3,840 rows
+  2006-12-01: 90,857
+  2009-12-01: 101,927
+  2011-12-01: 101,958
+  2016-12-01: 99,345
+  2021-12-01: 79,493
+  2025-11-01: 90,714
+  2026-11-01: 92,391
+  check: last month 92,391 vs people in custody now 92,409
+  race_or_ethnicity: most people unassigned in any month 0
+  gender: most people unassigned in any month 0
+  age_bucket: most people unassigned in any month 0
+Releases: 1,040,470 (excluded 9,695 final stays ending in death)
+Length of stay: releases 2023-11-01 to 2026-11-01: 76,539
+  years_0_1 40.7%, years_1_2 24.1%, years_2_3 13.0%, years_3_5 8.5%, years_5_10 7.4%, years_10_20 4.9%, years_20_plus 1.3%
+Recidivism (return to FDC prison), cohorts 2015-2024: 880 rows
+  2015: releases 32,381; 1-yr 9.2%, 3-yr 25.1%, 5-yr 33.2%
+  2016: releases 30,806; 1-yr 9.0%, 3-yr 25.6%, 5-yr 32.2%
+  2017: releases 30,000; 1-yr 9.2%, 3-yr 24.4%, 5-yr 32.4%
+  2018: releases 29,674; 1-yr 9.1%, 3-yr 21.7%, 5-yr 32.0%
+  2019: releases 29,714; 1-yr 7.2%, 3-yr 21.9%, 5-yr 32.3%
+  2020: releases 28,080; 1-yr 5.8%, 3-yr 22.4%, 5-yr 33.0%
+  2021: releases 24,077; 1-yr 7.9%, 3-yr 25.4%
+  2022: releases 24,284; 1-yr 9.5%, 3-yr 27.9%
+  2023: releases 24,715; 1-yr 9.9%
+  2024: releases 25,470; 1-yr 10.7%
+Supervision records: 137,360; snapshot date (latest start recorded): 2026-10-30
+  age missing or out of range (left out of age breakdown): 2
+  no Florida office (statewide total only): 241
+  status DEPORTED (excluded): 4,561
+  status MOVED TO OTHER STATE (excluded): 2,808
+  type not probation/post-prison: (blank) (excluded): 822
+  type not probation/post-prison: PROGRAM SUPERVISION (excluded): 209
+  PROBATION: 124,295 people; offices sum to 124,055
+  PAROLE: 4,665 people; offices sum to 4,664
+Under FDC control now (prison or supervision, unique people): 219,372; in both: 1,997
+  WHITE                            state  50.6%  FDC  52.8%
+  BLACK                            state  15.3%  FDC  40.0%
+  HISPANIC                         state  28.7%  FDC   6.1%
+  ASIAN                            state   3.2%  FDC   0.1%
+  AMERICAN_INDIAN_ALASKAN_NATIVE   state   0.3%  FDC   0.1%
+  OTHER                            state   2.0%  FDC   0.9%
+  ALL                              state 100.0%  FDC 100.0%

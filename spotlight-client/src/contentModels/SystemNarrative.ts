@@ -17,6 +17,7 @@
 
 import {
   MetricTypeId,
+  SectionDataSource,
   SystemNarrativeContent,
   SystemNarrativeTypeId,
 } from "../contentApi/types";
@@ -27,6 +28,7 @@ export type SystemNarrativeSection = {
   title: string;
   body: string;
   metric: Metric<MetricRecord>;
+  dataSource?: SectionDataSource;
 };
 
 type ConstructorArgs = {
@@ -80,10 +82,10 @@ export function createSystemNarrative({
   const sections: SystemNarrativeSection[] = [];
   // building sections in a type-safe way: make sure the related metric
   // actually exists or else the section is omitted
-  content.sections.forEach(({ title, body, metricTypeId }) => {
+  content.sections.forEach(({ title, body, metricTypeId, dataSource }) => {
     const metric = allMetrics.get(metricTypeId);
     if (metric instanceof Metric) {
-      sections.push({ title, body, metric });
+      sections.push({ title, body, metric, dataSource });
     }
   });
 

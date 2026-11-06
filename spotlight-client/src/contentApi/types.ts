@@ -22,13 +22,14 @@ import { CategoryFieldMapping } from "../metricsApi";
 
 export type LocalityLabels = {
   label: string;
-  entries: { id: string; label: string }[];
+  // group: optional section heading shown in the locality dropdown
+  entries: { id: string; label: string; group?: string }[];
 };
 
 // ============================
 // Tenant types
 
-export const TenantIdList = ["US_ND", "US_PA"] as const;
+export const TenantIdList = ["US_ND", "US_PA", "US_FL"] as const;
 export type TenantId = typeof TenantIdList[number];
 export function isTenantId(x: string): x is TenantId {
   return TenantIdList.includes(x as TenantId);
@@ -186,8 +187,15 @@ type NarrativeSection = {
   body: string;
 };
 
+/**
+ * "synthetic" marks a section whose chart uses generated stand-in data
+ * because the agency does not publish the underlying records; the UI labels it.
+ */
+export type SectionDataSource = "synthetic";
+
 type SystemNarrativeSection = NarrativeSection & {
   metricTypeId: MetricTypeId;
+  dataSource?: SectionDataSource;
 };
 
 type NarrativeContent = {
@@ -232,6 +240,7 @@ type RacialDisparitiesSectionKey =
 
 export type RacialDisparitiesSection = NarrativeSection & {
   methodology: string;
+  dataSource?: SectionDataSource;
 };
 
 export type RacialDisparitiesSections = {

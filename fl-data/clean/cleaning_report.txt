@@ -1,0 +1,24 @@
+Snapshot date (latest ReceiptDate): 2026-10-30
+Active inmate records read: 92,409
+Duplicate DCNumbers: 0
+  age under 18 (kept: juveniles can be sentenced as adults): 86
+Spotlight rows written: 1,007 -> incarceration_population_by_facility_by_demographics.json
+Consistency checks (breakdown sum vs total):
+  group totals sum to 92,409 -> OK
+  facilities sum to 92,409; statewide total 92,409 -> OK
+  breakdowns not summing to their total: 0
+Population by location type (name-based; review facility_lookup.csv):
+  MAJOR_INSTITUTION   81,115  (87.78%)  in 72 locations
+  WORK_CAMP            6,526  ( 7.06%)  in 25 locations
+  COMMUNITY_RELEASE    2,618  ( 2.83%)  in 31 locations
+  REENTRY_CENTER       1,747  ( 1.89%)  in 5 locations
+  OTHER_AGENCY           185  ( 0.20%)  in 6 locations
+  OUT_OF_STATE           147  ( 0.16%)  in 41 locations
+  COUNTY_CUSTODY          71  ( 0.08%)  in 33 locations
+  Major prisons: 55 entries, 87,191 people
+  Stand-alone work camps: 3 entries, 450 people
+  Re-entry centers: 5 entries, 1,747 people
+  Community release (work release): 1 entries, 2,618 people
+  Held outside FDC facilities: 3 entries, 403 people
+Dropdown entries: 71 (from 213 source locations) -> prison_localities.json
+Breakdown cells with fewer than 10 people: 159 (not suppressed; see notes)

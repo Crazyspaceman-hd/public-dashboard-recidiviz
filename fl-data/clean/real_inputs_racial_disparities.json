@@ -1,0 +1,65 @@
+{
+  "WHITE": {
+    "total_state_population": 11823687,
+    "current_total_sentenced_count": 115838,
+    "current_incarceration_sentence_count": 40743,
+    "current_probation_sentence_count": 74232,
+    "current_dual_sentence_count": 863,
+    "current_supervision_population": 75095,
+    "total_incarcerated_population_36_mo": 75048
+  },
+  "BLACK": {
+    "total_state_population": 3567665,
+    "current_total_sentenced_count": 87809,
+    "current_incarceration_sentence_count": 43784,
+    "current_probation_sentence_count": 43010,
+    "current_dual_sentence_count": 1015,
+    "current_supervision_population": 44025,
+    "total_incarcerated_population_36_mo": 73850
+  },
+  "HISPANIC": {
+    "total_state_population": 6707753,
+    "current_total_sentenced_count": 13351,
+    "current_incarceration_sentence_count": 5282,
+    "current_probation_sentence_count": 7962,
+    "current_dual_sentence_count": 107,
+    "current_supervision_population": 8069,
+    "total_incarcerated_population_36_mo": 8625
+  },
+  "ASIAN": {
+    "total_state_population": 757144,
+    "current_total_sentenced_count": 187,
+    "current_incarceration_sentence_count": 36,
+    "current_probation_sentence_count": 151,
+    "current_dual_sentence_count": 0,
+    "current_supervision_population": 151,
+    "total_incarcerated_population_36_mo": 51
+  },
+  "AMERICAN_INDIAN_ALASKAN_NATIVE": {
+    "total_state_population": 58490,
+    "current_total_sentenced_count": 222,
+    "current_incarceration_sentence_count": 104,
+    "current_probation_sentence_count": 115,
+    "current_dual_sentence_count": 3,
+    "current_supervision_population": 118,
+    "total_incarcerated_population_36_mo": 179
+  },
+  "OTHER": {
+    "total_state_population": 457476,
+    "current_total_sentenced_count": 1965,
+    "current_incarceration_sentence_count": 463,
+    "current_probation_sentence_count": 1493,
+    "current_dual_sentence_count": 9,
+    "current_supervision_population": 1502,
+    "total_incarcerated_population_36_mo": 707
+  },
+  "ALL": {
+    "total_state_population": 23372215,
+    "current_total_sentenced_count": 219372,
+    "current_incarceration_sentence_count": 90412,
+    "current_probation_sentence_count": 126963,
+    "current_dual_sentence_count": 1997,
+    "current_supervision_population": 128960,
+    "total_incarcerated_population_36_mo": 158460
+  }
+}

@@ -50,3 +50,9 @@ package-lock.json
 
 # Claude
 .claude/settings.local.json
+
+# Raw Florida OBIS downloads (person-level, never commit)
+fl-data/raw/
+
+# Local Python/Node virtual environment
+.venv/
