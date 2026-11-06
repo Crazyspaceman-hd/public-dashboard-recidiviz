@@ -37,7 +37,7 @@ import MeasureWidth from "../MeasureWidth";
 import calculatePct from "../contentModels/calculatePct";
 
 const CHART_HEIGHT = 430;
-const MARGIN = { bottom: 65, left: 56, right: 8, top: 8 };
+const MARGIN = Object.freeze({ bottom: 65, left: 56, right: 8, top: 8 });
 const MINIMAP_HEIGHT = 80;
 
 const Wrapper = styled.div``;
@@ -173,10 +173,11 @@ const WindowedTimeSeries: React.FC<{
     matte: true,
   };
 
-  if (!showMinimap) {
-    MARGIN.left = 0;
-    MARGIN.bottom = 0;
-  }
+  // Previews (no minimap) have no axes, so they drop the axis margins. This must be a
+  // copy: mutating the shared MARGIN constant zeroed the axis space for every chart
+  // rendered later in the session, hiding the axis labels after navigating from a
+  // narrative preview to the full chart.
+  const margin = showMinimap ? MARGIN : { ...MARGIN, left: 0, bottom: 0 };
 
   return (
     <MeasureWidth>
@@ -186,7 +187,7 @@ const WindowedTimeSeries: React.FC<{
             <ChartWrapper>
               <XHoverController
                 lines={data}
-                margin={MARGIN}
+                margin={margin}
                 otherChartProps={{
                   // @ts-expect-error Semiotic typedefs are wrong,
                   // we can use dates as long as the scale accepts them
@@ -248,7 +249,7 @@ const WindowedTimeSeries: React.FC<{
                           setDateRangeEnd(new Date(end));
                         }
                       },
-                      margin: { ...MARGIN, bottom: 0 },
+                      margin: { ...margin, bottom: 0 },
                       size: [width, MINIMAP_HEIGHT],
                       // suppress brush area if width is 0 to prevent SVG rendering errors
                       xBrushable: Boolean(width),
