@@ -22,6 +22,7 @@ import Wayfinder from "./NarrativeNavigation";
 import NarrativeSection from "./NarrativeSection";
 import { LayoutSection } from "./types";
 import { useInternalNavigation } from "./useInternalNavigation";
+import { useSectionSnap } from "./useSectionSnap";
 
 const Wrapper = styled.div`
   display: flex;
@@ -43,10 +44,18 @@ const NarrativeLayout: React.FC<NarrativeLayoutProps> = ({ sections }) => {
     alwaysExpanded,
     currentSectionNumber,
     fixedHeightSections,
+    initialScrollComplete,
     scrollToSection,
     sectionsContainerRef,
     onSectionInViewChange,
   } = useInternalNavigation();
+
+  // settle on the next section when scrolling stops; waits until a deep-linked
+  // section has been scrolled into place so the two can't fight
+  useSectionSnap({
+    containerRef: sectionsContainerRef,
+    enabled: initialScrollComplete,
+  });
 
   return (
     <Wrapper>
