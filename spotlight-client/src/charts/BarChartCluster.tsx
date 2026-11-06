@@ -28,10 +28,22 @@ import ResponsiveTooltipController, {
 import { highlightFade, useHighlightedItem } from "./utils";
 import MeasureWidth from "../MeasureWidth";
 import { animation, colors, zIndex } from "../UiLibrary";
-import { formatAsPct } from "../utils";
+import { format } from "d3-format";
 import { RateByCategoryAndDemographicsRecords } from "../contentModels/types";
 
 const CHART_HEIGHT = 400;
+/**
+ * Percent tick labels with just enough decimals for the visible range: "20%" at a
+ * normal scale, "0.5%" or "0.05%" when hidden series zoom the axis in, instead of
+ * rounding several ticks to the same label.
+ */
+export function pctTickFormatter(maxValue: number): (value: number) => string {
+  // the chart draws about 3 ticks, so their spacing is roughly a third of the max
+  const stepInPct = (maxValue * 100) / 3;
+  const decimals =
+    stepInPct > 0 ? Math.min(3, Math.max(0, -Math.floor(Math.log10(stepInPct)))) : 0;
+  return format(`.${decimals}~%`);
+}
 const CHART_MIN_WIDTH = 736;
 
 const Container = styled.figure`
@@ -46,12 +58,14 @@ const horizontalScrollStyles = css`
 
 const ChartWrapper = styled(BaseChartWrapper)<{
   isScrollable?: boolean;
+  flatLabels?: boolean;
 }>`
   position: relative;
   z-index: ${zIndex.base + 1};
 
   .foreground-graphics .ordinal-labels text {
-    transform: rotate(-45deg) translate(0rem, 0rem);
+    transform: ${(props) =>
+      props.flatLabels ? "none" : "rotate(-45deg) translate(0rem, 0rem)"};
   }
 
   ${(props) => props.isScrollable && horizontalScrollStyles}
@@ -82,11 +96,25 @@ const LegendWrapper = styled.div`
   justify-content: flex-end;
 `;
 
+/** One cluster: its label plus one value (0-1) per series named in `accessors`. */
+export type BarChartClusterRecord =
+  | RateByCategoryAndDemographicsRecords
+  | ({ label: string } & Record<string, number | string>);
+
 type BarChartClusterProps = {
   demographicView: string;
-  data: RateByCategoryAndDemographicsRecords[];
+  data: BarChartClusterRecord[];
   accessors: string[];
   getTooltipProps: ResponsiveTooltipControllerProps["getTooltipProps"];
+  /** short cluster labels: keep them horizontal and use less bottom margin */
+  flatLabels?: boolean;
+  /**
+   * fixed color per series name; without it colors follow series position,
+   * which shifts every color when a series is hidden
+   */
+  seriesColors?: Record<string, string>;
+  /** set false when the caller renders its own legend (e.g. series toggles) */
+  showLegend?: boolean;
 };
 
 /**
@@ -97,10 +125,16 @@ export function BarChartCluster({
   data,
   accessors,
   getTooltipProps,
+  flatLabels = false,
+  seriesColors,
+  showLegend = true,
 }: BarChartClusterProps): React.ReactElement {
+  const colorOf = (name: string, index: number) =>
+    seriesColors?.[name] ?? colors.dataViz[index];
   const isMobile = useBreakpoint(false, ["mobile-", true]);
   const chartTransitions = useTransition(
-    { demographicView, data },
+    // accessors travel with their data so a fading-out view keeps its own series
+    { demographicView, data, accessors },
     (item) => item.demographicView,
     animation.crossFade
   );
@@ -116,7 +150,7 @@ export function BarChartCluster({
   const itemsToDisplay = accessors.map((accessor, index) => {
     return {
       label: accessor,
-      color: colors.dataViz[index],
+      color: colorOf(accessor, index),
     };
   });
 
@@ -132,8 +166,21 @@ export function BarChartCluster({
           >
             {width > 0 && (
               <>
-                {chartTransitions.map(({ item, key, props }) => (
-                  <ChartWrapper key={key} isScrollable={isScrollable}>
+                {chartTransitions.map(({ item, key, props }) => {
+                  const maxValue = Math.max(
+                    0,
+                    ...item.data.flatMap((row) =>
+                      item.accessors.map(
+                        (a) => Number((row as Record<string, unknown>)[a]) || 0
+                      )
+                    )
+                  );
+                  return (
+                  <ChartWrapper
+                    key={key}
+                    isScrollable={isScrollable}
+                    flatLabels={flatLabels}
+                  >
                     <animated.div style={props}>
                       <ResponsiveTooltipController
                         pieceHoverAnnotation
@@ -149,23 +196,30 @@ export function BarChartCluster({
                           data={item.data}
                           pieceClass="BarChartCluster__segment"
                           type="clusterbar"
-                          oPadding={40}
-                          margin={{ bottom: 120, left: 56, right: 0, top: 8 }}
+                          oPadding={flatLabels ? 16 : 40}
+                          margin={{
+                            bottom: flatLabels ? 40 : 120,
+                            left: 56,
+                            right: 0,
+                            top: 8,
+                          }}
                           oAccessor="label"
                           // @ts-expect-error Semiotic typedefs are wrong,
                           // we can use label as string here
                           oLabel={(label: string) => (
-                            <text textAnchor="end">{label}</text>
+                            <text textAnchor={flatLabels ? "middle" : "end"}>
+                              {label}
+                            </text>
                           )}
                           // @ts-expect-error Semiotic typedefs are wrong,
                           // we can use array of strings, when type of chart is "clusterbar"
-                          rAccessor={accessors}
+                          rAccessor={item.accessors}
                           size={[
                             isScrollable ? CHART_MIN_WIDTH : width,
                             CHART_HEIGHT,
                           ]}
                           style={({ rName, rIndex, renderKey }) => {
-                            const color = colors.dataViz[rIndex];
+                            const color = colorOf(rName, rIndex);
                             if (highlightedSegmentKey)
                               return {
                                 fill:
@@ -185,7 +239,7 @@ export function BarChartCluster({
                             {
                               baseline: false,
                               orient: "left",
-                              tickFormat: formatAsPct,
+                              tickFormat: pctTickFormatter(maxValue),
                               ticks: 3,
                               tickSize: 0,
                             },
@@ -194,16 +248,19 @@ export function BarChartCluster({
                       </ResponsiveTooltipController>
                     </animated.div>
                   </ChartWrapper>
-                ))}
-                <Metadata>
-                  <LegendWrapper>
-                    <ColorLegend
-                      highlighted={highlighted}
-                      items={itemsToDisplay}
-                      setHighlighted={setHighlighted}
-                    />
-                  </LegendWrapper>
-                </Metadata>
+                  );
+                })}
+                {showLegend && (
+                  <Metadata>
+                    <LegendWrapper>
+                      <ColorLegend
+                        highlighted={highlighted}
+                        items={itemsToDisplay}
+                        setHighlighted={setHighlighted}
+                      />
+                    </LegendWrapper>
+                  </Metadata>
+                )}
               </>
             )}
           </Container>
