@@ -56,3 +56,6 @@ fl-data/raw/
 
 # Local Python/Node virtual environment
 .venv/
+
+# Python bytecode
+__pycache__/

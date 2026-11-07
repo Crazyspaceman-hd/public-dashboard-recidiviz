@@ -228,6 +228,11 @@ export type RacialDisparitiesChartLabels = {
   supervisionPopulation: string;
   totalPopulationSentences: string;
   revocationProportions: string;
+  // optional: labels for the county example's bars (population, arrests, court, corrections)
+  countyPopulation?: string;
+  countyArrested?: string;
+  countyFoundGuilty?: string;
+  countyUnderControl?: string;
 };
 
 type RacialDisparitiesSectionKey =
@@ -236,6 +241,7 @@ type RacialDisparitiesSectionKey =
   | "releasesToParole"
   | "programming"
   | "supervision"
+  | "countyExample"
   | "conclusion";
 
 export type RacialDisparitiesSection = NarrativeSection & {

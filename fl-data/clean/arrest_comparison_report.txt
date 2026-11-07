@@ -1,0 +1,150 @@
+Census: 67 counties, age 18+ population 18,878,176; groups sum to total (within rounding) in every county: yes
+  charge rows with age under 18 (excluded): 1
+  charge rows with no age (kept: the dataset is adults only): 77,914
+Arrests 2025, age 18+: 284,528 people (each counted once, in the county of their latest 2025 booking)
+People arrested per 1,000 adults, and share with unknown race/ethnicity, by county:
+  Bay County               53.7   unknown  62.5%
+  Holmes County            48.3   unknown  68.2%
+  Liberty County           41.1   unknown   4.8%
+  Levy County              40.0   unknown  17.3%
+  Franklin County          37.3   unknown  15.7%
+  Jefferson County         35.9   unknown  12.8%
+  DeSoto County            32.4   unknown   0.1%
+  Hillsborough County      26.9   unknown   0.5%
+  Pinellas County          25.8   unknown 100.0%
+  Marion County            25.6   unknown  16.6%
+  Duval County             23.5   unknown 100.0%
+  Gulf County              22.4   unknown  17.6%
+  Orange County            20.3   unknown   1.7%
+  Walton County            19.6   unknown   9.3%
+  Volusia County           19.0   unknown  99.3%
+  Sarasota County          18.1   unknown 100.0%
+  Pasco County             17.8   unknown  10.3%
+  Lee County               17.1   unknown  20.0%
+  St. Lucie County         17.0   unknown   0.5%
+  Seminole County          15.5   unknown  44.8%
+  Brevard County           15.5   unknown  89.7%
+  Broward County           15.0   unknown   0.0%
+  Collier County           14.9   unknown   0.1%
+  Lake County              14.7   unknown   0.0%
+  Clay County              14.6   unknown   6.4%
+  Charlotte County         14.2   unknown   3.7%
+  Miami-Dade County        14.1   unknown   1.6%
+  Leon County              13.3   unknown   2.4%
+  Osceola County           13.2   unknown  43.3%
+  Palm Beach County        13.0   unknown  24.0%
+  Nassau County            12.6   unknown 100.0%
+  Okeechobee County        11.2   unknown  24.9%
+  Manatee County           10.3   unknown   2.3%
+  Martin County             4.2   unknown  18.6%
+  Citrus County             2.4   unknown  97.4%
+  Dixie County              1.9   unknown   0.0%
+  Calhoun County            1.8   unknown  15.8%
+  Madison County            1.5   unknown   0.0%
+  Flagler County            0.8   unknown  60.4%
+  Okaloosa County           0.4   unknown  32.3%
+  Indian River County       0.3   unknown  55.0%
+  Wakulla County            0.2   unknown   0.0%
+  Gadsden County            0.2   unknown   0.0%
+  Putnam County             0.2   unknown 100.0%
+  Hendry County             0.1   unknown   0.0%
+  Hernando County           0.1   unknown 100.0%
+  Taylor County             0.1   unknown   0.0%
+  Jackson County            0.0   unknown   0.0%
+  Washington County         0.0   unknown   0.0%
+  Suwannee County           0.0   unknown   0.0%
+  Columbia County           0.0   unknown   0.0%
+  Escambia County           0.0   unknown   0.0%
+  Sumter County             0.0   unknown   0.0%
+  Santa Rosa County         0.0   unknown   0.0%
+  Alachua County            0.0   unknown   0.0%
+  Polk County               0.0   unknown   0.0%
+  Baker County              0.0   unknown 100.0%
+  Bradford County           0.0   unknown 100.0%
+  Gilchrist County          0.0   unknown 100.0%
+  Glades County             0.0   unknown 100.0%
+  Hamilton County           0.0   unknown 100.0%
+  Hardee County             0.0   unknown 100.0%
+  Highlands County          0.0   unknown 100.0%
+  Lafayette County          0.0   unknown 100.0%
+  Monroe County             0.0   unknown 100.0%
+  St. Johns County          0.0   unknown 100.0%
+  Union County              0.0   unknown 100.0%
+Complete counties: 14 of 67 (rules: person identifier on at least 90% of records, at least 5 people arrested per 1,000 adults, and race/ethnicity unknown for at most 10% of people)
+  excluded Alachua County: no person identifier on 100% of records
+  excluded Baker County: no person identifier on 100% of records; race/ethnicity unknown for 100%
+  excluded Bay County: race/ethnicity unknown for 62%
+  excluded Bradford County: no person identifier on 100% of records; race/ethnicity unknown for 100%
+  excluded Brevard County: race/ethnicity unknown for 90%
+  excluded Calhoun County: incomplete reporting (1.8 people per 1,000 adults); race/ethnicity unknown for 16%
+  excluded Citrus County: incomplete reporting (2.4 people per 1,000 adults); race/ethnicity unknown for 97%
+  excluded Columbia County: no person identifier on 100% of records
+  excluded Dixie County: no person identifier on 62% of records
+  excluded Duval County: race/ethnicity unknown for 100%
+  excluded Escambia County: no person identifier on 100% of records
+  excluded Flagler County: no person identifier on 23% of records; race/ethnicity unknown for 60%
+  excluded Franklin County: race/ethnicity unknown for 16%
+  excluded Gadsden County: no person identifier on 14% of records
+  excluded Gilchrist County: no person identifier on 100% of records; race/ethnicity unknown for 100%
+  excluded Glades County: no person identifier on 100% of records; race/ethnicity unknown for 100%
+  excluded Gulf County: race/ethnicity unknown for 18%
+  excluded Hamilton County: no person identifier on 100% of records; race/ethnicity unknown for 100%
+  excluded Hardee County: no person identifier on 100% of records; race/ethnicity unknown for 100%
+  excluded Hendry County: no person identifier on 100% of records
+  excluded Hernando County: no person identifier on 100% of records; race/ethnicity unknown for 100%
+  excluded Highlands County: no person identifier on 100% of records; race/ethnicity unknown for 100%
+  excluded Holmes County: race/ethnicity unknown for 68%
+  excluded Indian River County: incomplete reporting (0.3 people per 1,000 adults); race/ethnicity unknown for 55%
+  excluded Jackson County: no person identifier on 99% of records
+  excluded Jefferson County: race/ethnicity unknown for 13%
+  excluded Lafayette County: no person identifier on 100% of records; race/ethnicity unknown for 100%
+  excluded Lee County: race/ethnicity unknown for 20%
+  excluded Levy County: race/ethnicity unknown for 17%
+  excluded Madison County: no person identifier on 86% of records
+  excluded Marion County: race/ethnicity unknown for 17%
+  excluded Martin County: incomplete reporting (4.2 people per 1,000 adults); race/ethnicity unknown for 19%
+  excluded Monroe County: no person identifier on 100% of records; race/ethnicity unknown for 100%
+  excluded Nassau County: race/ethnicity unknown for 100%
+  excluded Okaloosa County: incomplete reporting (0.4 people per 1,000 adults); race/ethnicity unknown for 32%
+  excluded Okeechobee County: race/ethnicity unknown for 25%
+  excluded Osceola County: race/ethnicity unknown for 43%
+  excluded Palm Beach County: race/ethnicity unknown for 24%
+  excluded Pasco County: race/ethnicity unknown for 10%
+  excluded Pinellas County: race/ethnicity unknown for 100%
+  excluded Polk County: incomplete reporting (0.0 people per 1,000 adults)
+  excluded Putnam County: no person identifier on 99% of records; race/ethnicity unknown for 100%
+  excluded Santa Rosa County: no person identifier on 100% of records
+  excluded Sarasota County: race/ethnicity unknown for 100%
+  excluded Seminole County: race/ethnicity unknown for 45%
+  excluded St. Johns County: no person identifier on 100% of records; race/ethnicity unknown for 100%
+  excluded Sumter County: no person identifier on 100% of records
+  excluded Suwannee County: no person identifier on 99% of records
+  excluded Taylor County: no person identifier on 100% of records
+  excluded Union County: no person identifier on 100% of records; race/ethnicity unknown for 100%
+  excluded Volusia County: race/ethnicity unknown for 99%
+  excluded Wakulla County: no person identifier on 98% of records
+  excluded Washington County: no person identifier on 100% of records
+Complete counties hold 44.9% of Florida's age 18+ population
+FDC control on 2026-10-30, age 18+, convicted in a complete county: 78,594 people (county = county of conviction for their most recent offense)
+  age missing or under 18 (excluded): 158
+  no county of conviction (excluded): 1,593
+Court, Hillsborough County, cases closed in 2025 with a finding of guilt (adjudicated or withheld), age 18+: 18,897 people
+  charges closed without a finding of guilt (excluded): 7,915
+  charges with age under 18 (excluded): 427
+  charges with no age (kept): 7
+Shares in complete counties (population | arrested, known race/ethnicity | FDC control):
+  WHITE                             38.9% |  32.7% |  45.4%
+  BLACK                             16.8% |  40.1% |  46.6%
+  HISPANIC                          39.3% |  26.5% |   7.1%
+  ASIAN                              3.5% |   0.5% |   0.1%
+  AMERICAN_INDIAN_ALASKAN_NATIVE     0.2% |   0.1% |   0.1%
+  OTHER                              1.3% |   0.0% |   0.7%
+  arrested with unknown race/ethnicity (left out of shares): 1,696
+Example county Hillsborough County (population | arrested 2025 | guilty/withheld 2025 | FDC control), adults 18+: 1,244,581 | 33,528 | 18,897 | 12,016
+  WHITE                             47.0% |  32.9% |  46.2% |  41.9%
+  BLACK                             15.5% |  40.3% |  38.3% |  47.8%
+  HISPANIC                          30.4% |  25.7% |  14.5% |   9.4%
+  ASIAN                              5.2% |   1.0% |   0.8% |   0.1%
+  AMERICAN_INDIAN_ALASKAN_NATIVE     0.2% |   0.1% |   0.1% |   0.0%
+  OTHER                              1.8% |   0.0% |   0.0% |   0.7%
+  unknown race/ethnicity left out: arrested 152, court 487, FDC 0

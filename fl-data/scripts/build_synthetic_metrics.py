@@ -240,6 +240,11 @@ def main(base):
     # ------------------------------------------------- F. racial disparities
     with open(os.path.join(clean, "real_inputs_racial_disparities.json"), encoding="utf-8") as f:
         real = json.load(f)
+    example = None
+    example_path = os.path.join(clean, "arrest_comparison.json")
+    if os.path.exists(example_path):
+        with open(example_path, encoding="utf-8") as f:
+            example = json.load(f)["example_county"]
     rows = []
     for race, v in real.items():
         row = {"race_or_ethnicity": race}
@@ -259,6 +264,16 @@ def main(base):
             short = k.replace("_count", "")
             row[f"supervision_{short}_count_36_mo"] = str(
                 int(row[f"probation_{short}_count_36_mo"]) + int(row[f"parole_{short}_count_36_mo"]))
+        # real, not synthetic: one county's population / arrests / court findings of guilt / FDC
+        # control (see build_arrest_comparison.py); people with unknown race or ethnicity are left out
+        if example:
+            ex_groups = [g for g in real if g != "ALL"]
+            for field, stage in (("example_county_population", "population"),
+                                 ("example_county_arrested", "arrested"),
+                                 ("example_county_found_guilty", "found_guilty"),
+                                 ("example_county_under_control", "under_fdc_control")):
+                counts = example[stage]
+                row[field] = str(sum(counts[g] for g in ex_groups) if race == "ALL" else counts.get(race, 0))
         row["parole_release_count_36_mo"] = "0"     # section not used for Florida
         row["current_ftr_participation_count"] = "0"  # North Dakota program; not used
         rows.append(row)

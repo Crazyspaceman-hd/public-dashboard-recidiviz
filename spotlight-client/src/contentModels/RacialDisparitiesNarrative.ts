@@ -82,6 +82,12 @@ const getRevocationTypeProportions = (record: CountsForSupervisionType) => {
 
 type RecordsMapping = { [key in RaceIdentifier]: RacialDisparitiesRecord };
 
+type CountyExampleField =
+  | "exampleCountyPopulation"
+  | "exampleCountyArrested"
+  | "exampleCountyFoundGuilty"
+  | "exampleCountyUnderControl";
+
 type SentencingMetrics = {
   incarcerationPctCurrent: number;
   probationPctCurrent: number;
@@ -463,8 +469,33 @@ export default class RacialDisparitiesNarrative implements Hydratable {
       unfocusedColor,
     } = this;
     if (populationDataSeries === undefined) return undefined;
+    return this.focusOnSelectedCategory(populationDataSeries, {
+      chartLabels,
+      focusColor,
+      selectedCategoryLabel,
+      unfocusedColor,
+    });
+  }
 
-    return populationDataSeries.map((series) => {
+  /**
+   * Merges every category except the selected one into a single "all other groups"
+   * record, so each bar shows the selected group against everyone else.
+   */
+  private focusOnSelectedCategory(
+    dataSeries: DemographicCategoryRecords[],
+    {
+      chartLabels,
+      focusColor,
+      selectedCategoryLabel,
+      unfocusedColor,
+    }: {
+      chartLabels: RacialDisparitiesChartLabels;
+      focusColor: string;
+      selectedCategoryLabel: string;
+      unfocusedColor: string;
+    },
+  ): DemographicCategoryRecords[] {
+    return dataSeries.map((series) => {
       // merge all unselected categories into one
       const splitRecords = group(
         series.records,
@@ -491,6 +522,79 @@ export default class RacialDisparitiesNarrative implements Hydratable {
 
       return { ...series, records: [focusedRecord, otherRecord] };
     });
+  }
+
+  /**
+   * Optional county example: one county's population, people arrested there, people
+   * found guilty in its courts (if supplied), and people under DOC control convicted
+   * there, as stacked bars. Undefined unless the tenant's data includes the example
+   * county fields.
+   */
+  get countyExampleDataSeries(): undefined | DemographicCategoryRecords[] {
+    const {
+      allCategories,
+      chartLabels,
+      focusColor,
+      records,
+      selectedCategoryLabel,
+      unfocusedColor,
+    } = this;
+    if (records === undefined || records.ALL.exampleCountyPopulation === undefined)
+      return undefined;
+
+    const stage = (label: string, field: CountyExampleField) => ({
+      label,
+      records: calculatePct(
+        allCategories.map(({ identifier, label: categoryLabel }, index) => ({
+          label: categoryLabel,
+          color: colors.dataViz[index],
+          value: records[identifier as RaceIdentifier]?.[field] ?? 0,
+        })),
+      ),
+    });
+
+    return this.focusOnSelectedCategory(
+      [
+        stage(chartLabels.countyPopulation ?? "Population", "exampleCountyPopulation"),
+        stage(chartLabels.countyArrested ?? "Arrested", "exampleCountyArrested"),
+        ...(records.ALL.exampleCountyFoundGuilty === undefined
+          ? []
+          : [
+              stage(
+                chartLabels.countyFoundGuilty ?? "Found guilty",
+                "exampleCountyFoundGuilty",
+              ),
+            ]),
+        stage(
+          chartLabels.countyUnderControl ?? "Under corrections control",
+          "exampleCountyUnderControl",
+        ),
+      ],
+      { chartLabels, focusColor, selectedCategoryLabel, unfocusedColor },
+    );
+  }
+
+  get countyExample():
+    | undefined
+    | {
+        populationPct: number;
+        arrestedPct: number;
+        foundGuiltyPct: number;
+        underControlPct: number;
+      } {
+    const { records, selectedCategory } = this;
+    if (records === undefined || records.ALL.exampleCountyPopulation === undefined)
+      return undefined;
+    const selected = records[selectedCategory];
+    const total = records.ALL;
+    const share = (field: CountyExampleField) =>
+      total[field] ? (selected[field] ?? 0) / (total[field] as number) : 0;
+    return {
+      populationPct: share("exampleCountyPopulation"),
+      arrestedPct: share("exampleCountyArrested"),
+      foundGuiltyPct: share("exampleCountyFoundGuilty"),
+      underControlPct: share("exampleCountyUnderControl"),
+    };
   }
 
   get revocationsDataSeries(): undefined | DemographicCategoryRecords[] {
@@ -697,7 +801,7 @@ export default class RacialDisparitiesNarrative implements Hydratable {
       );
     }
 
-    (["beforeCorrections", "releasesToParole"] as const).forEach((key) => {
+    (["beforeCorrections", "releasesToParole", "countyExample"] as const).forEach((key) => {
       if (this[key]) {
         data[key] = mapValues(this[key], formatAsPct);
       }
@@ -740,6 +844,7 @@ export default class RacialDisparitiesNarrative implements Hydratable {
     const {
       beforeCorrections,
       conclusion,
+      countyExample,
       programming,
       releasesToParole,
       supervision,
@@ -750,6 +855,21 @@ export default class RacialDisparitiesNarrative implements Hydratable {
         ...beforeCorrections,
         chartData: this.focusedPopulationDataSeries,
         download: this.downloadPopulation,
+      });
+    }
+    if (countyExample && this.countyExampleDataSeries) {
+      sections.push({
+        ...countyExample,
+        chartData: this.countyExampleDataSeries,
+        download: this.getDownloadFn({
+          name: "county example",
+          fieldsToInclude: [
+            "exampleCountyPopulation",
+            "exampleCountyArrested",
+            "exampleCountyFoundGuilty",
+            "exampleCountyUnderControl",
+          ],
+        }),
       });
     }
     if (sentencing) {

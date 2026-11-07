@@ -54,7 +54,7 @@ const SNAPSHOT_NOTE = `<aside>
 const DEMOGRAPHICS_NOTE = `<p>
   Age is calculated as of the reporting date. Sex is reported as recorded by FDC (male or
   female). FDC records race and ethnicity in one field, so a person is counted as Hispanic
-  only when that is their recorded race; Hispanic people are very likely undercounted.
+  only when that is their recorded race.
   FDC's categories "Asian or Pacific Islander" and "All others/unknown" are shown as Asian
   and Other.
 </p>`;
@@ -433,9 +433,9 @@ const content: TenantContent = {
       as likely as white Floridians to be under FDC control.
     </p>
     <aside>
-      Hispanic Floridians appear underrepresented (__HISP_STATE__ of the state, __HISP_FDC__
-      of FDC records), but this mostly reflects how FDC records ethnicity, not a real gap. See
-      the methodology.
+      FDC records race and ethnicity in a single field, while the Census asks about
+      Hispanic origin separately, so the two sources do not define these groups the same
+      way. See the methodology.
     </aside>`,
     introductionMethodology: `<p>
       State population: U.S. Census Bureau Vintage 2024 estimates
@@ -444,12 +444,12 @@ const content: TenantContent = {
       other groups non-Hispanic, to match FDC's single race/ethnicity field.
     </p>
     <p>
-      FDC records a single race or ethnicity per person. Census asks about Hispanic origin
-      separately, and roughly __HISP_STATE__ of Floridians are Hispanic, but only __HISP_FDC__
-      of people under FDC control are recorded as Hispanic. Many Hispanic people are most
-      likely recorded as white or Black in FDC data, which makes those groups look larger
-      and Hispanic people look smaller than they are. Comparisons for Hispanic and white
-      Floridians should be read with that in mind.
+      FDC records a single race or ethnicity per person, with Hispanic as one option
+      alongside White, Black and others. The Census asks about Hispanic origin separately
+      from race. Because the two sources collect this information differently, their
+      categories may not line up exactly. In these sources, __HISP_STATE__ of Floridians are
+      Hispanic (Census) and __HISP_FDC__ of people under FDC control are recorded as
+      Hispanic (FDC).
     </p>
     <p>
       "Under FDC control" counts each person once if they are in prison, on probation or on
@@ -465,25 +465,78 @@ const content: TenantContent = {
       supervisionPopulation: "",
       totalPopulationSentences: "",
       revocationProportions: "Revocations by reason",
+      countyPopulation: "__EX_NAME__ adults (Census 2024 estimate)",
+      countyArrested: "Adults booked into the __EX_NAME__ jail, __EX_YEAR__",
+      countyFoundGuilty: "Adults found guilty in __EX_NAME__ courts, __EX_YEAR__ (including adjudication withheld)",
+      countyUnderControl: "People under FDC control convicted in __EX_NAME__",
     },
     supervisionTypes: ["supervision", "probation", "parole"],
     sections: {
       beforeCorrections: {
-        title: "Disparities are already present before prison",
+        title: "How does the population under FDC control compare with Florida's?",
         body: `<p>
-          By the time someone is under FDC control, they have been arrested, charged,
-          convicted and sentenced, and disparities can arise at each step.
+          {ethnonymCapitalized} make up {beforeCorrections.populationPctCurrent} of
+          Florida's population and {beforeCorrections.correctionsPctCurrent} of the people
+          in prison or on supervision.
         </p>
         <p>
-          {ethnonymCapitalized} make up {beforeCorrections.populationPctCurrent} of
-          Florida's population but {beforeCorrections.correctionsPctCurrent} of the people
-          in prison or on supervision.
+          This compares two snapshots: everyone in Florida, and everyone FDC holds or
+          supervises today. It shows how far the two differ, not where along the way
+          (arrest, charging, conviction or sentencing) any difference arises.
         </p>`,
         methodology: `<p>
           Compares each group's share of Florida's population (Census Vintage 2024) with its
           share of everyone in FDC prison or on FDC supervision on __AS_OF_LONG__, counting
           each person once. See the introduction's methodology for how race and ethnicity
           are recorded.
+        </p>`,
+      },
+      countyExample: {
+        title: "What better data could show: __EX_NAME__",
+        body: `<p>
+          The comparison above goes straight from Florida's population to FDC, skipping
+          arrests, because Florida's statewide arrest data is not complete yet: in __EX_YEAR__, only __COMPLETE_COUNTIES__ of Florida's 67 counties sent
+          FDLE jail booking records complete enough to count people by race and ethnicity.
+          __EX_NAME__ is one of them, so it shows what this page could do for the whole state.
+        </p>
+        <p>
+          In __EX_NAME__, {ethnonym} make up {countyExample.populationPct} of adults,
+          {countyExample.arrestedPct} of adults booked into the county jail in __EX_YEAR__,
+          {countyExample.foundGuiltyPct} of adults found guilty in its courts in __EX_YEAR__, and
+          {countyExample.underControlPct} of people under FDC control who were convicted there.
+        </p>
+        <p>
+          Each bar is a separate snapshot of who is at that stage, not the same people followed
+          through the system: cases that closed in __EX_YEAR__ include arrests from earlier years.
+        </p>`,
+        methodology: `<p>
+          Adults 18 and older in __EX_NAME__. Population: U.S. Census Bureau Vintage 2024
+          county estimates (July 1, 2024); Census reports ages in 5-year bands, so ages 18-19
+          are approximated as two-fifths of the 15-19 band. Arrests: Florida Department of Law
+          Enforcement Criminal Justice Data Transparency jail booking records for __EX_YEAR__,
+          counting each person once (__EX_BOOKED__ people); __EX_UNKNOWN__ people with no
+          recorded race or ethnicity, and records without a person identifier, are left out.
+          Court: FDLE Criminal Justice Data Transparency Clerk of Court records of charges closed
+          in __EX_NAME__ in __EX_YEAR__ with a finding of guilt, either adjudicated guilty or
+          adjudication withheld (Florida's outcome in which guilt is found but no formal
+          conviction is entered), counting each person once (__EX_GUILTY__ people);
+          __EX_GUILTY_UNKNOWN__ people with no recorded race or ethnicity are left out. FDC: people
+          in prison or on supervision on __AS_OF_LONG__ whose most recent offense was convicted
+          in __EX_NAME__.
+        </p>
+        <p>
+          The Census, FDLE booking records and Clerk of Court records report Hispanic origin
+          separately from race; FDC records race and ethnicity in a single field. Hispanic people
+          of any race are counted as Hispanic in the first three bars. The share of people
+          recorded as Hispanic differs between sources (__EX_HISP_BOOKED__ of people booked,
+          __EX_HISP_COURT__ of people found guilty); the data does not show why.
+        </p>
+        <p>
+          A county's booking data counts as complete here when at least 90% of records carry
+          a person identifier, at least 5 people are booked per 1,000 adults, and race or
+          ethnicity is missing for no more than 10% of people. __COMPLETE_COUNTIES__ counties met
+          all three in __EX_YEAR__. __EX_NAME__ was chosen from them as a large county whose
+          ethnicity field is in use.
         </p>`,
       },
       supervision: {
@@ -505,9 +558,9 @@ const content: TenantContent = {
       conclusion: {
         title: "What would make these comparisons more reliable?",
         body: `<div>
-          The largest limitation here is how ethnicity is recorded. Recording Hispanic
-          origin separately from race, as the Census does, would let Florida measure
-          disparities for its large Hispanic population. Publishing admission reasons,
+          Two changes would make these comparisons more reliable. Recording Hispanic origin
+          separately from race, as the Census does, would let FDC's categories match the
+          population figures they are compared with. Publishing admission reasons,
           supervision outcomes and revocation reasons would replace every synthetic chart on
           this site with real data.
         </div>
@@ -652,6 +705,18 @@ def main(repo):
              BLACK_FDC=pct(rd["BLACK"]["current_total_sentenced_count"] / fdc_all),
              HISP_STATE=pct(rd["HISPANIC"]["total_state_population"] / state_all),
              HISP_FDC=pct(rd["HISPANIC"]["current_total_sentenced_count"] / fdc_all))
+
+    with open(os.path.join(clean, "arrest_comparison.json"), encoding="utf-8") as f:
+        arrests = json.load(f)
+    ex = arrests["example_county"]
+    v.update(EX_NAME=ex["name"], EX_YEAR=arrests["arrest_year"],
+             COMPLETE_COUNTIES=str(len(arrests["counties"])),
+             EX_BOOKED=f"{ex['arrested']['TOTAL']:,}", EX_UNKNOWN=f"{ex['arrested']['UNKNOWN']:,}")
+    fg = ex["found_guilty"]
+    known_share = lambda c, g: pct(c[g] / (c["TOTAL"] - c["UNKNOWN"]))  # noqa: E731
+    v.update(EX_GUILTY=f"{fg['TOTAL']:,}", EX_GUILTY_UNKNOWN=f"{fg['UNKNOWN']:,}",
+             EX_HISP_BOOKED=known_share(ex["arrested"], "HISPANIC"),
+             EX_HISP_COURT=known_share(fg, "HISPANIC"))
 
     out = TEMPLATE.replace("__ENTRIES__", entries_ts(prison_entries)).replace("__OFFICES__", entries_ts(offices))
     out = HEADER + out

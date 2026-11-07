@@ -31,10 +31,13 @@ One combined field: W, B, H (Hispanic), A (Asian or Pacific Islander), I (Americ
 | American Indian | 0.1% | 0.1% | 0.1% |
 | Asian/Pacific Islander | 0.04% (36 people) | 0.02% | 0.1% |
 
-**Likely Hispanic undercount.** Florida's general population is roughly a quarter Hispanic (confirm with
-Census ACS), and Miami-Dade is the top county of conviction for releases, yet only 4–7% of records are
-coded Hispanic. Because race and ethnicity share one field, Hispanic people are probably often recorded as
-W or B. Any racial-disparity chart built on this must say so.
+**Hispanic share differs sharply from Census (unexplained).** Census estimates Florida at about 29%
+Hispanic (Vintage 2024), while only 4–7% of FDC records are coded Hispanic. FDC uses one combined
+race/ethnicity field; Census asks about Hispanic origin separately. One possible explanation is that the
+single field leads to Hispanic people being recorded as W or B, but that is **not verified**, and the site
+makes no claim about the cause. Policy: no race-based assumptions on the site without supporting evidence.
+Evidence that could settle it: FDC's own published population statistics by ethnicity, or FDC
+documentation of how race/ethnicity is collected at intake.
 
 **Small groups.** Asian (36) and American Indian (107) counts in prison are tiny. Charts must suppress or
 pool small cells rather than error out (this is the Spotlight "Asian" crash, in real data).
@@ -158,9 +161,58 @@ Checks run during the build:
 - 3-year return rates are 22-28% for the 2015-2022 cohorts. FDC publishes its own 3-year
   rate; this build has not been benchmarked against it yet.
 - Every demographic breakdown sums to its total in every month (0 unassigned).
-- Racial disparities: FDC records 6% Hispanic against 29% of Floridians (Census). That gap is
-  mostly a recording artifact (one race/ethnicity field), and the page says so.
+- Racial disparities: FDC records 6% Hispanic against 29% of Floridians (Census). The cause of the
+  gap is not established; the page states both figures and the difference in how the two sources
+  collect ethnicity, without attributing the gap to either.
 
 Census source: Vintage 2024 state estimates, `sc-est2024-alldata6.csv` (STATE=12, SEX=0,
 POPESTIMATE2024), streamed and summed without saving the file. Hispanic = any race;
 other groups non-Hispanic; Other = NHPI + two or more races.
+
+## Arrest data (FDLE Criminal Justice Data Transparency) and the county example
+
+Source: FDLE CJDT county detention arrest records, full download `CountyDetentionArrest.zip`
+(person-based, adults only, no personal identifiers; charge-level rows linked by `MDM_PERSON_ID`;
+race and ethnicity in separate fields). Builder: `fl-data/scripts/build_arrest_comparison.py`;
+report: `fl-data/clean/arrest_comparison_report.txt`.
+
+- Coverage grows each year (counties appearing: 30 in 2021, 51 in 2023, 61 in 2024, 67 in 2025),
+  but most 2025 submissions are not usable to count people by race and ethnicity:
+  21 counties send no person identifier (and no age), others leave race or ethnicity blank
+  (e.g. Duval and Pinellas 100%), and some report almost nothing (e.g. Polk).
+- Completeness rule (2025): person identifier on 90%+ of records, at least 5 people booked per
+  1,000 adults (a natural break: usable counties are all 10+, the next is 4.2), race/ethnicity
+  missing for at most 10% of people. 14 of 67 counties pass (44.9% of Florida adults), so a
+  statewide arrest comparison is not published.
+- Ethnicity field use varies even among passing counties: Lake and Walton record 0.0% of people
+  booked as Hispanic, Broward 4.2% and St. Lucie 5.8%, against 20-34% of their adults. Whether the
+  field is informative there cannot be told from this data; no claim is made about it.
+- The site shows one county as an example of what complete data allows: **Hillsborough**
+  (1.6M people; 33,528 adults booked in 2025; race/ethnicity unknown for 0.5%; ethnicity field in
+  use). Four bars, adults 18+: Census population (ages 18-19 approximated as 2/5 of the 15-19
+  band), people booked in 2025, people found guilty in Hillsborough courts in 2025 (see below),
+  people under FDC control whose most recent offense was convicted in Hillsborough. FDC records
+  race and ethnicity in one field; the other three sources separately.
+
+## Court data (FDLE CJDT Clerk of Court cases)
+
+Source: FDLE CJDT Clerk of Court case records, full download `CjdtClerkCase.zip` (4.5M charge rows,
+adults, dispositions 1985-2026; `MDM_PERSON_ID` blank on 0.8%; race and ethnicity separate).
+
+- **Court bar for Hillsborough**: charges closed in 2025 as Adjudicated Guilty or Adjudication
+  Withheld (single-letter codes G/W included), age 18+, each person counted once: 18,897 people,
+  487 with unknown race/ethnicity left out. Shares (Black / White / Hispanic): 38.3 / 46.2 / 14.5%,
+  vs. 40.3 / 32.9 / 25.7% booked. Counting every closed case instead gives nearly the same shares.
+- The bars are separate snapshots, not one cohort: cases closed in 2025 include earlier arrests.
+- Recorded Hispanic share falls at each source (Census 30%, booked 26%, court 14%, FDC 9%), while
+  White + Hispanic combined is roughly level from booking (58.6%) to court (60.7%). The data does
+  not show why; the page states the difference without explaining it.
+- **Person-level linkage, bookings -> court** (by `MDM_PERSON_ID`; charge IDs never match between
+  the two files): statewide, 43% of people booked in 2025 have a court record and 34% have a charge
+  closed on or after their first 2025 booking. **Hillsborough links to almost none (14 of 33,535
+  people)**, though its clerk reported 48,244 dispositions in 2025, so its jail records appear not
+  to carry the statewide person ID. Counties that link well (60%+ of booked people with a court
+  record) include Volusia, Palm Beach, Lake, Pinellas, Pasco, Bay, Collier, Manatee, St. Lucie and
+  Leon; of those, only Collier, Manatee and St. Lucie also pass the race/ethnicity completeness
+  rule with an ethnicity field in use (Lake records 0.0% Hispanic). A per-booking outcome rate by
+  race is possible there, but not published: many 2025 cases are still open.

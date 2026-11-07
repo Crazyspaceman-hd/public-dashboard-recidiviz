@@ -423,6 +423,10 @@ const content: ExhaustiveTenantContent = {
       supervisionPopulation: "People subject to supervision",
       totalPopulationSentences: "All people sentenced and under DOCR control",
       revocationProportions: "Proportions of revocation reasons",
+      countyPopulation: "county population",
+      countyArrested: "county arrested",
+      countyFoundGuilty: "county found guilty",
+      countyUnderControl: "county under control",
     },
     introduction: `introduction {likelihoodVsWhite.BLACK} {likelihoodVsWhite.HISPANIC}
         {likelihoodVsWhite.AMERICAN_INDIAN_ALASKAN_NATIVE}`,
@@ -435,6 +439,13 @@ const content: ExhaustiveTenantContent = {
         body: `beforeCorrections body {ethnonymCapitalized} {beforeCorrections.populationPctCurrent}
         {beforeCorrections.correctionsPctCurrent}`,
         methodology: "beforeCorrections methodology",
+      },
+      countyExample: {
+        title: "countyExample title",
+        dataSource: "synthetic",
+        body: `countyExample body {countyExample.populationPct} {countyExample.arrestedPct}
+        {countyExample.foundGuiltyPct} {countyExample.underControlPct}`,
+        methodology: "countyExample methodology",
       },
       conclusion: {
         title: "conclusion title",
