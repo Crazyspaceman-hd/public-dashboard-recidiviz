@@ -17,99 +17,58 @@
 
 import { observer } from "mobx-react-lite";
 import React from "react";
-import { animated, useTransition } from "react-spring/web.cjs";
-import styled from "styled-components/macro";
-import RateTrend, {
-  CHART_HEIGHT,
-  MIN_LEGEND_HEIGHT,
-} from "../charts/RateTrend";
+import RecidivismCurve from "../charts/RecidivismCurve";
 import RecidivismRateMetric from "../contentModels/RecidivismRateMetric";
-import DemographicFilterSelect from "../DemographicFilterSelect";
 import MetricVizControls from "../MetricVizControls";
 import ReturnTypeFilterSelect from "../ReturnTypeFilterSelect";
-import { animation } from "../UiLibrary";
 import VizNotes from "../VizNotes";
 import withMetricHydrator from "../withMetricHydrator";
-import CohortFilterSelect from "./CohortFilterSelect";
 
-const ChartWrapper = styled.div`
-  /* px instead of rem for consistency with Semiotic */
-  min-height: ${CHART_HEIGHT + MIN_LEGEND_HEIGHT}px;
-  position: relative;
-`;
+// the y-axis title follows the Type of Return filter where there is one
+const VALUE_LABELS: Record<string, string> = {
+  ALL: "Share of people who returned",
+  INCARCERATION: "Share of people back in prison",
+  SUPERVISION: "Share of people back on supervision",
+};
 
 type VizRecidivismRateCumulativeProps = {
   metric: RecidivismRateMetric;
 };
 
+/**
+ * Cumulative recidivism shown as one combined curve over a band of individual
+ * release years. Comparing release years is left to the single-follow-up chart,
+ * so there is no release-year picker or demographic breakdown here.
+ */
 const VizRecidivismRateCumulative: React.FC<VizRecidivismRateCumulativeProps> = ({
   metric,
 }) => {
-  const {
-    cohortDataSeries,
-    selectedCohorts,
-    highlightedCohort,
-    demographicView,
-    unknowns,
-  } = metric;
+  const { pooledCurve, unknowns } = metric;
 
-  const chartTransitions = useTransition(
-    { demographicView, cohortDataSeries },
-    (item) => item.demographicView,
-    animation.crossFade
+  if (!pooledCurve) return null;
+
+  return (
+    <>
+      <MetricVizControls
+        filters={[
+          metric.returnType !== undefined && (
+            <ReturnTypeFilterSelect metric={metric} />
+          ),
+        ]}
+        metric={metric}
+        smallData
+      />
+      <RecidivismCurve
+        data={pooledCurve}
+        valueLabel={
+          metric.returnType !== undefined
+            ? VALUE_LABELS[metric.returnType]
+            : undefined
+        }
+      />
+      <VizNotes unknowns={unknowns} download={metric.download} />
+    </>
   );
-
-  if (cohortDataSeries && selectedCohorts) {
-    return (
-      <>
-        <MetricVizControls
-          filters={[
-            <CohortFilterSelect metric={metric} />,
-            metric.returnType !== undefined && (
-              <ReturnTypeFilterSelect metric={metric} />
-            ),
-            metric.includesDemographics && (
-              <DemographicFilterSelect
-                disabled={selectedCohorts.length !== 1}
-                metric={metric}
-              />
-            ),
-          ]}
-          metric={metric}
-          smallData
-        />
-        <ChartWrapper>
-          {chartTransitions.map(({ item, props, key }) => (
-            <animated.div key={key} style={props}>
-              {item.cohortDataSeries && (
-                <RateTrend
-                  data={item.cohortDataSeries}
-                  title="Cumulative Recidivism Rate"
-                  xAccessor="followupYears"
-                  // we don't want the X axis to get shorter when cohorts are filtered
-                  xExtent={[0, metric.maxFollowupPeriod]}
-                  xLabel="Years since release"
-                  xTicks={
-                    metric.maxFollowupPeriod < 10
-                      ? metric.maxFollowupPeriod
-                      : undefined
-                  }
-                  highlighted={
-                    highlightedCohort
-                      ? { label: `${highlightedCohort}` }
-                      : undefined
-                  }
-                />
-              )}
-            </animated.div>
-          ))}
-        </ChartWrapper>
-        <VizNotes unknowns={unknowns} download={metric.download} />
-      </>
-    );
-  }
-
-  return null;
 };
 
 export default withMetricHydrator(observer(VizRecidivismRateCumulative));

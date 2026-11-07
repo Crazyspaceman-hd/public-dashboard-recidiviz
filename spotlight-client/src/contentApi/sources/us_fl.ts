@@ -144,9 +144,14 @@ const content: TenantContent = {
           title: "How many people come back to prison?",
           body: `<p>
             FDC measures recidivism as a return to a Florida state prison, for a new sentence
-            or a supervision violation. Of people released in 2022,
-            28% were back in prison within three years. Each line follows one year's
-            releases for as many years as have passed.
+            or a supervision violation. Combining every release year since
+            2015, 24% of people were back in prison within three years
+            and 42% within ten. Most returns happen in the first three years; after
+            that the curve flattens.
+          </p>
+          <p>
+            The shaded band shows the lowest and highest single release year. It is narrow:
+            the pattern has barely changed from year to year.
           </p>`,
           metricTypeId: "PrisonRecidivismRateHistorical",
         },
@@ -320,9 +325,15 @@ const content: TenantContent = {
         For every release in a calendar year, a return is counted if the same person was
         admitted to FDC custody again within the given number of years, for any reason. This
         follows FDC's own definition of recidivism (return to prison), but is calculated
-        independently and may differ from FDC's published reports. Years are only shown once
-        the whole release year has had time to reach them. Stays that ended in death are
-        excluded; returns to county jail, federal prison or other states are not counted.
+        independently and may differ from FDC's published reports. Stays that ended in death
+        are excluded; returns to county jail, federal prison or other states are not counted.
+      </p>
+      <p>
+        The line combines all release years, weighted by number of releases: at each point,
+        everyone who returned divided by everyone released, counting only the release years
+        that have been followed that long. Later points therefore rest on fewer, earlier
+        release years (ten years: 2015 only). The band spans the lowest and
+        highest single release year at each point.
       </p>
       ${DEMOGRAPHICS_NOTE}`,
     },

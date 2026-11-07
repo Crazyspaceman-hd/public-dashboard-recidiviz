@@ -15,8 +15,7 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 // =============================================================================
 
-import { fireEvent, screen, waitFor, within } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
+import { screen } from "@testing-library/react";
 import { runInAction, when } from "mobx";
 import React from "react";
 import RecidivismRateMetric from "../contentModels/RecidivismRateMetric";
@@ -27,10 +26,6 @@ import VizRecidivismRateCumulative from "./VizRecidivismRateCumulative";
 jest.mock("../MeasureWidth/MeasureWidth");
 
 let metric: RecidivismRateMetric;
-
-let originalFilters: {
-  demographicView: RecidivismRateMetric["demographicView"];
-};
 
 beforeEach(() => {
   runInAction(() => {
@@ -43,9 +38,6 @@ beforeEach(() => {
     // it will be
     if (metricToTest instanceof RecidivismRateMetric) {
       metric = metricToTest;
-      originalFilters = {
-        demographicView: metric.demographicView,
-      };
     }
   });
 });
@@ -53,8 +45,6 @@ beforeEach(() => {
 afterEach(() => {
   runInAction(() => {
     DataStore.tenantStore.currentTenantId = undefined;
-    metric.demographicView = originalFilters.demographicView;
-    metric.setSelectedCohorts(undefined);
   });
 });
 
@@ -63,188 +53,70 @@ test("loading", () => {
   expect(screen.getByText(/loading/i)).toBeInTheDocument();
 });
 
-test("total chart", async () => {
+test("one combined curve with values written on the chart", async () => {
   renderWithStore(<VizRecidivismRateCumulative metric={metric} />);
-
   await when(() => !metric.isLoading);
 
-  // there are multiple charts due to how interactions are implemented;
-  // the first one should be the one we care about
-  const chart = screen.getAllByRole("group", {
-    name: "10 lines in a line chart",
-  })[0];
-
+  const chart = await screen.findByRole("img", {
+    name: /^Share of people back in prison after release: \d+% within 1 year, \d+% within 3 years, \d+% within 5 years, \d+% within 10 years\.$/,
+  });
   expect(chart).toBeInTheDocument();
-  // don't have to deeply inspect the values but let's make sure the lines have the proper shape
-  for (let numPoints = 2; numPoints <= 11; numPoints += 1) {
-    expect(
-      within(chart).getByRole("img", {
-        name: new RegExp(
-          `^${numPoints} point line starting value 0% at 0 ending value \\d+% at ${
-            numPoints - 1
-          }`,
-        ),
-      }),
-    ).toBeInTheDocument();
-  }
+
+  // labels are on the chart itself, not only in tooltips
+  const curve = metric.pooledCurve ?? [];
+  [1, 3, 5, 10].forEach((years) => {
+    const point = curve.find((p) => p.followupYears === years);
+    expect(point).toBeDefined();
+  });
+  expect(chart.querySelectorAll("text.value-label").length).toBe(4);
+
+  expect(screen.getByText(/All release years combined/)).toBeInTheDocument();
+  expect(
+    screen.getByText("Range of individual release years"),
+  ).toBeInTheDocument();
 });
 
-test("demographic charts", async () => {
+test("no release-year picker or demographic breakdown", async () => {
   renderWithStore(<VizRecidivismRateCumulative metric={metric} />);
-
   await when(() => !metric.isLoading);
+  await screen.findByRole("img", { name: /^Share of people back in prison/ });
 
-  const menuButton = screen.getByRole("button", {
-    name: "View Total",
-  });
-
-  // must select a single cohort to enable this filter
-  expect(menuButton).toBeDisabled();
-
-  metric.setSelectedCohorts([2017]);
-
-  fireEvent.click(menuButton);
-  fireEvent.click(screen.getByRole("option", { name: "Race or Ethnicity" }));
-
-  let [lineChart] = screen.getAllByRole("group", {
-    name: "5 lines in a line chart",
-  });
-
-  expect(
-    within(lineChart).getAllByRole("img", {
-      name: /^3 point line starting value 0% at 0 ending value \d+% at 2/,
-    }).length,
-  ).toBe(5);
-
-  fireEvent.click(menuButton);
-  fireEvent.click(screen.getByRole("option", { name: "Gender" }));
-
-  [lineChart] = await screen.findAllByRole("group", {
-    name: "2 lines in a line chart",
-  });
-
-  expect(
-    within(lineChart).getAllByRole("img", {
-      name: /^3 point line starting value 0% at 0 ending value \d+% at 2/,
-    }).length,
-  ).toBe(2);
-
-  fireEvent.click(menuButton);
-  fireEvent.click(screen.getByRole("option", { name: "Age Group" }));
-
-  await waitFor(() => {
-    [lineChart] = screen.getAllByRole("group", {
-      name: "7 lines in a line chart",
-    });
-  });
-
-  expect(
-    within(lineChart).getAllByRole("img", {
-      name: /^3 point line starting value 0% at 0 ending value \d+% at 2/,
-    }).length,
-  ).toBe(7);
+  expect(screen.queryByRole("button", { name: /cohort/i })).toBeNull();
+  expect(screen.queryByRole("button", { name: /^View /i })).toBeNull();
 });
 
-test("release cohorts filter", async () => {
+test("the y-axis fits the data instead of always running to 100%", async () => {
   renderWithStore(<VizRecidivismRateCumulative metric={metric} />);
-
   await when(() => !metric.isLoading);
-
-  expect(
-    screen.getAllByRole("group", {
-      name: "10 lines in a line chart",
-    }).length,
-  ).toBe(2);
-
-  const menuButton = screen.getByRole("button", {
-    name: "Cohort 2009 and 9 others",
+  const chart = await screen.findByRole("img", {
+    name: /^Share of people back in prison/,
   });
-  fireEvent.click(menuButton);
-  fireEvent.click(screen.getByRole("option", { name: "2012" }));
 
-  expect(
-    screen.getAllByRole("group", {
-      name: "9 lines in a line chart",
-    }).length,
-  ).toBe(2);
-  expect(
-    screen.getByRole("option", { name: "2012", selected: false }),
-  ).toBeVisible();
-
-  fireEvent.click(screen.getByRole("option", { name: "2014" }));
-  fireEvent.click(screen.getByRole("option", { name: "2015" }));
-
-  expect(
-    screen.getAllByRole("group", {
-      name: "7 lines in a line chart",
-    }).length,
-  ).toBe(2);
-  expect(
-    screen.getAllByRole("option", { name: /201[45]/, selected: false }).length,
-  ).toBe(2);
-
-  fireEvent.click(screen.getByRole("option", { name: "2012" }));
-  expect(
-    screen.getAllByRole("group", {
-      name: "8 lines in a line chart",
-    }).length,
-  ).toBe(2);
-  expect(
-    screen.getByRole("option", { name: "2012", selected: true }),
-  ).toBeVisible();
+  const maxValue = Math.max(...(metric.pooledCurve ?? []).map((p) => p.max));
+  const ticks = Array.from(chart.querySelectorAll(".grid text")).map((t) =>
+    parseFloat(t.textContent ?? ""),
+  );
+  const top = Math.max(...ticks) / 100;
+  expect(top).toBeGreaterThanOrEqual(maxValue);
+  // headroom is at most one "nice" step above the data, not a fixed 100%
+  expect(top).toBeLessThan(maxValue + 0.25);
 });
 
-test("highlight release cohort", async () => {
-  renderWithStore(<VizRecidivismRateCumulative metric={metric} />);
-
-  await screen.findAllByRole("group", {
-    name: "10 lines in a line chart",
+test("supervision charts label the axis by type of return", async () => {
+  let paroleMetric: RecidivismRateMetric | undefined;
+  reactImmediately(() => {
+    const m = DataStore.tenant?.metrics.get("ParoleRecidivismRateHistorical");
+    if (m instanceof RecidivismRateMetric) paroleMetric = m;
   });
+  if (!paroleMetric) throw new Error("parole recidivism metric missing");
 
-  const menuButton = screen.getByRole("button", {
-    name: "Cohort 2009 and 9 others",
-  });
+  renderWithStore(<VizRecidivismRateCumulative metric={paroleMetric} />);
+  await when(() => !paroleMetric?.isLoading);
 
-  userEvent.click(menuButton);
-
-  userEvent.hover(screen.getByRole("option", { name: "2012" }));
-
-  await waitFor(() => {
-    expect(screen.getByRole("group", { name: "points" })).toBeVisible();
-  });
-
+  // default filter is "Any return", which includes returns to supervision
   expect(
-    screen.getAllByRole("img", { name: /^Point at x \d and y 0\.\d+/ }).length,
-  ).toBe(7);
-});
-
-test("highlighted release cohorts are visible even if not selected", async () => {
-  renderWithStore(<VizRecidivismRateCumulative metric={metric} />);
-
-  await when(() => !metric.isLoading);
-
-  const menuButton = screen.getByRole("button", {
-    name: "Cohort 2009 and 9 others",
-  });
-
-  userEvent.click(menuButton);
-  userEvent.click(screen.getByRole("option", { name: "2012" }));
-
-  // still selected (hover from the click keeps it visible)
-  await screen.findAllByRole("group", {
-    name: "10 lines in a line chart",
-  });
-
-  // move the mouse off
-  userEvent.hover(screen.getByRole("option", { name: "2013" }));
-  expect(
-    (await screen.findAllByRole("group", { name: "9 lines in a line chart" }))
-      .length,
-  ).toBe(2);
-
-  // move the mouse back on
-  userEvent.hover(screen.getByRole("option", { name: "2012" }));
-  expect(
-    screen.getAllByRole("group", { name: "10 lines in a line chart" }).length,
-  ).toBe(2);
+    await screen.findByRole("img", {
+      name: /^Share of people who returned after release:/,
+    }),
+  ).toBeInTheDocument();
 });

@@ -160,9 +160,14 @@ const content: TenantContent = {
           title: "How many people come back to prison?",
           body: `<p>
             FDC measures recidivism as a return to a Florida state prison, for a new sentence
-            or a supervision violation. Of people released in __REC_LATEST3_COHORT__,
-            __REC_LATEST3__ were back in prison within three years. Each line follows one year's
-            releases for as many years as have passed.
+            or a supervision violation. Combining every release year since
+            __REC3_FIRST_COHORT__, __POOL3__ of people were back in prison within three years
+            and __POOL10__ within ten. Most returns happen in the first three years; after
+            that the curve flattens.
+          </p>
+          <p>
+            The shaded band shows the lowest and highest single release year. It is narrow:
+            the pattern has barely changed from year to year.
           </p>`,
           metricTypeId: "PrisonRecidivismRateHistorical",
         },
@@ -336,9 +341,15 @@ const content: TenantContent = {
         For every release in a calendar year, a return is counted if the same person was
         admitted to FDC custody again within the given number of years, for any reason. This
         follows FDC's own definition of recidivism (return to prison), but is calculated
-        independently and may differ from FDC's published reports. Years are only shown once
-        the whole release year has had time to reach them. Stays that ended in death are
-        excluded; returns to county jail, federal prison or other states are not counted.
+        independently and may differ from FDC's published reports. Stays that ended in death
+        are excluded; returns to county jail, federal prison or other states are not counted.
+      </p>
+      <p>
+        The line combines all release years, weighted by number of releases: at each point,
+        everyone who returned divided by everyone released, counting only the release years
+        that have been followed that long. Later points therefore rest on fewer, earlier
+        release years (ten years: __POOL10_COHORTS__ only). The band spans the lowest and
+        highest single release year at each point.
       </p>
       ${DEMOGRAPHICS_NOTE}`,
     },
@@ -603,6 +614,18 @@ def main(repo):
     v.update(REC_LATEST3_COHORT=str(latest), REC_LATEST3=pct(rec3[latest]),
              REC3_MIN=pct(min(rec3.values())), REC3_MAX=pct(max(rec3.values())),
              REC3_FIRST_COHORT=str(min(rec3)))
+    # pooled curve, computed exactly like the chart: sum returned / sum released
+    pooled = {}
+    for r in read_jsonl(os.path.join(clean, "recidivism_rates_by_cohort_by_year.json")):
+        if is_total(r):
+            p = pooled.setdefault(int(r["followup_years"]), [0, 0, []])
+            p[0] += int(r["recidivated_releases"])
+            p[1] += int(r["releases"])
+            p[2].append(int(r["release_cohort"]))
+    longest = max(pooled)
+    v.update(POOL3=pct(pooled[3][0] / pooled[3][1]),
+             POOL10=pct(pooled[longest][0] / pooled[longest][1]),
+             POOL10_COHORTS=", ".join(str(c) for c in sorted(pooled[longest][2])))
 
     sup = read_jsonl(os.path.join(clean, "supervision_population_by_district_by_demographics.json"))
     tot = {(r["supervision_type"], r["district"]): int(r["total_supervision_count"]) for r in sup if is_total(r)}
