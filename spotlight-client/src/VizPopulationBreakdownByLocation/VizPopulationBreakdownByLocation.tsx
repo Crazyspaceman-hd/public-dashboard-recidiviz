@@ -20,6 +20,7 @@ import { rem } from "polished";
 import React from "react";
 import styled from "styled-components/macro";
 import { ProportionalBar } from "../charts";
+import SmallDataNote, { anySmallData } from "../charts/SmallDataNote";
 import PopulationBreakdownByLocationMetric from "../contentModels/PopulationBreakdownByLocationMetric";
 import MetricVizControls from "../MetricVizControls";
 import LocalityFilterSelect from "../LocalityFilterSelect";
@@ -62,6 +63,7 @@ const VizPopulationBreakdownByLocation: React.FC<VizPopulationBreakdownByLocatio
           smallData
         />
         {viz}
+        {anySmallData(metric.dataSeries) && <SmallDataNote />}
         <StatisticWrapper>
           <Statistic
             label={metric.totalLabel}

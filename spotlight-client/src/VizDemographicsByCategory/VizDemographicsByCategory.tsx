@@ -21,6 +21,7 @@ import React from "react";
 import { animated, useTransition } from "react-spring/web.cjs";
 import styled from "styled-components/macro";
 import { BubbleChart, ProportionalBar } from "../charts";
+import SmallDataNote, { anySmallData } from "../charts/SmallDataNote";
 import { useHighlightedItem } from "../charts/utils";
 import DemographicsByCategoryMetric from "../contentModels/DemographicsByCategoryMetric";
 import DemographicFilterSelect from "../DemographicFilterSelect";
@@ -125,6 +126,7 @@ const VizDemographicsByCategory: React.FC<VizDemographicsByCategoryProps> = ({
           smallData
         />
         {viz}
+        {anySmallData(dataSeries) && <SmallDataNote />}
         <VizNotes unknowns={unknowns} download={download} />
       </>
     );
