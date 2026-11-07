@@ -18,7 +18,7 @@
 import { sum } from "d3-array";
 import { observer } from "mobx-react-lite";
 import { rem } from "polished";
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { animated, useTransition } from "react-spring/web.cjs";
 import styled from "styled-components/macro";
 import {
@@ -31,61 +31,21 @@ import {
   BarChartCluster,
   BarChartClusterRecord,
 } from "../charts/BarChartCluster";
+import SeriesToggles, {
+  seriesColorMap,
+  useHiddenSeries,
+} from "../charts/SeriesToggles";
 import DemographicsByCategoryMetric from "../contentModels/DemographicsByCategoryMetric";
 import { DemographicCategoryRecords } from "../contentModels/types";
 import DemographicFilterSelect from "../DemographicFilterSelect";
 import MetricVizControls from "../MetricVizControls";
 import { prisonStayLengthFields } from "../metricsApi";
-import {
-  animation,
-  AutoHeightTransition,
-  Checkbox,
-  colors,
-} from "../UiLibrary";
-import { formatAsNumber } from "../utils";
+import { animation, AutoHeightTransition, colors } from "../UiLibrary";
 import withMetricHydrator from "../withMetricHydrator";
 import VizNotes from "../VizNotes";
 
 const ChartsWrapper = styled.div`
   position: relative;
-`;
-
-const GroupToggles = styled.fieldset`
-  border: none;
-  display: flex;
-  flex-wrap: wrap;
-  font-size: ${rem(13)};
-  gap: ${rem(6)} ${rem(18)};
-  margin: ${rem(12)} 0 0;
-  padding: 0;
-`;
-
-const ToggleLegend = styled.legend`
-  color: ${colors.caption};
-  margin-bottom: ${rem(6)};
-  padding: 0;
-`;
-
-const ToggleLabel = styled.label<{ disabled?: boolean }>`
-  align-items: center;
-  color: ${colors.text};
-  cursor: ${(props) => (props.disabled ? "not-allowed" : "pointer")};
-  display: inline-flex;
-`;
-
-const Swatch = styled.span<{ color: string; off: boolean }>`
-  background: ${(props) => (props.off ? "transparent" : props.color)};
-  border: 2px solid ${(props) => props.color};
-  border-radius: 50%;
-  display: inline-block;
-  height: ${rem(10)};
-  margin-right: ${rem(6)};
-  width: ${rem(10)};
-`;
-
-const GroupCount = styled.span`
-  color: ${colors.caption};
-  margin-left: ${rem(4)};
 `;
 
 const ClusterNote = styled.p`
@@ -156,8 +116,7 @@ const VizPrisonStayLengths: React.FC<VizPrisonStayLengthsProps> = ({
   const { dataSeries, demographicView, unknowns } = metric;
 
   // groups the reader has unchecked; every group is shown again on a new view
-  const [hiddenGroups, setHiddenGroups] = useState<string[]>([]);
-  useEffect(() => setHiddenGroups([]), [demographicView]);
+  const [hiddenGroups, toggleGroup] = useHiddenSeries(demographicView);
 
   const chartTransitions = useTransition(
     { demographicView, dataSeries },
@@ -178,21 +137,14 @@ const VizPrisonStayLengths: React.FC<VizPrisonStayLengthsProps> = ({
     // big group only rescales the axis so the small groups become readable
     const clusters = toShareOfAllReleases(dataSeries);
     const visibleGroups = groups.filter((g) => !hiddenGroups.includes(g));
-    const seriesColors = Object.fromEntries(
-      groups.map((g, i) => [g, colors.dataViz[i % colors.dataViz.length]])
-    );
+    const seriesColors = seriesColorMap(groups);
     const groupTotals = Object.fromEntries(
       dataSeries.map(({ label, records }) => [
         label,
         sum(records, ({ value }) => value),
       ])
     );
-    const toggleGroup = (group: string) =>
-      setHiddenGroups((hidden) =>
-        hidden.includes(group)
-          ? hidden.filter((g) => g !== group)
-          : [...hidden, group]
-      );
+
     const getClusterTooltipProps: TooltipContentFunction = (columnData) => {
       const group = String(columnData.rName);
       const row = columnData.data as BarChartClusterRecord;
@@ -223,27 +175,14 @@ const VizPrisonStayLengths: React.FC<VizPrisonStayLengthsProps> = ({
           seriesColors={seriesColors}
           showLegend={false}
         />
-        <GroupToggles>
-          <ToggleLegend>
-            Show or hide groups (number of releases shown):
-          </ToggleLegend>
-          {groups.map((group) => {
-            const off = hiddenGroups.includes(group);
-            const lastOne = !off && visibleGroups.length === 1;
-            return (
-              <ToggleLabel key={group} disabled={lastOne}>
-                <Checkbox
-                  checked={!off}
-                  disabled={lastOne}
-                  onChange={() => toggleGroup(group)}
-                />
-                <Swatch color={seriesColors[group]} off={off} aria-hidden />
-                {group}
-                <GroupCount>{formatAsNumber(groupTotals[group])}</GroupCount>
-              </ToggleLabel>
-            );
-          })}
-        </GroupToggles>
+        <SeriesToggles
+          series={groups}
+          colorsBySeries={seriesColors}
+          counts={groupTotals}
+          hidden={hiddenGroups}
+          onToggle={toggleGroup}
+          legend="Show or hide groups (number of releases shown):"
+        />
         <ClusterNote>
           Each column is that group&apos;s share of all releases, so the columns
           for a stay length add up to its overall share. Hide large groups to

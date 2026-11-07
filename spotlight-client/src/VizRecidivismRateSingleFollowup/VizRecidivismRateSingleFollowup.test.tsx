@@ -15,18 +15,16 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 // =============================================================================
 
-import {
-  fireEvent,
-  screen,
-  waitForElementToBeRemoved,
-  within,
-} from "@testing-library/react";
+import { fireEvent, screen } from "@testing-library/react";
 import { runInAction, when } from "mobx";
 import React from "react";
 import RecidivismRateMetric from "../contentModels/RecidivismRateMetric";
 import DataStore from "../DataStore";
 import { reactImmediately, renderWithStore } from "../testUtils";
-import VizRecidivismRateSingleFollowup from "./VizRecidivismRateSingleFollowup";
+import VizRecidivismRateSingleFollowup, {
+  SMALL_GROUP_RELEASES,
+  toRateClusters,
+} from "./VizRecidivismRateSingleFollowup";
 
 jest.mock("../MeasureWidth/MeasureWidth");
 
@@ -69,87 +67,92 @@ test("loading", () => {
   expect(screen.getByText(/loading/i)).toBeInTheDocument();
 });
 
-test("total chart", async () => {
+test("total view: one grouped chart of each release year's rate", async () => {
   renderWithStore(<VizRecidivismRateSingleFollowup metric={metric} />);
-
   await when(() => !metric.isLoading);
 
-  const chart = screen.getByRole("group", { name: "8 bars in a bar chart" });
-  expect(chart).toBeInTheDocument();
   expect(
-    within(chart).getByRole("img", { name: "2009 bar value 41%" }),
+    await screen.findByRole("figure", { name: "total" }),
   ).toBeInTheDocument();
-  expect(
-    within(chart).getByRole("img", { name: "2010 bar value 49%" }),
-  ).toBeInTheDocument();
-  expect(
-    within(chart).getByRole("img", { name: "2011 bar value 31%" }),
-  ).toBeInTheDocument();
-  expect(
-    within(chart).getByRole("img", { name: "2012 bar value 49%" }),
-  ).toBeInTheDocument();
-  expect(
-    within(chart).getByRole("img", { name: "2013 bar value 44%" }),
-  ).toBeInTheDocument();
-  expect(
-    within(chart).getByRole("img", { name: "2014 bar value 40%" }),
-  ).toBeInTheDocument();
-  expect(
-    within(chart).getByRole("img", { name: "2015 bar value 30%" }),
-  ).toBeInTheDocument();
-  expect(
-    within(chart).getByRole("img", { name: "2016 bar value 38%" }),
-  ).toBeInTheDocument();
+  // a single series needs no show/hide toggles
+  expect(screen.queryAllByRole("checkbox")).toHaveLength(0);
+
+  const clusters = toRateClusters(metric.singleFollowupDemographics ?? []);
+  expect(clusters.map(({ label }) => label)).toEqual([
+    "2009",
+    "2010",
+    "2011",
+    "2012",
+    "2013",
+    "2014",
+    "2015",
+    "2016",
+  ]);
+  const expected = [0.41, 0.49, 0.31, 0.49, 0.44, 0.4, 0.3, 0.38];
+  clusters.forEach((row, i) =>
+    expect(Number(row.Total)).toBeCloseTo(expected[i], 2),
+  );
 });
 
-test("demographic charts", async () => {
+test("demographic views are grouped columns with toggles", async () => {
   renderWithStore(<VizRecidivismRateSingleFollowup metric={metric} />);
-
   await when(() => !metric.isLoading);
 
-  const totalChart = screen.getByRole("group", {
-    name: "8 bars in a bar chart",
-  });
+  const menuButton = screen.getByRole("button", { name: "View Total" });
+  const check = async (option: string, view: string) => {
+    fireEvent.click(menuButton);
+    fireEvent.click(screen.getByRole("option", { name: option }));
+    await screen.findByRole("figure", { name: view });
+    const series = metric.singleFollowupDemographics ?? [];
+    expect(series.length).toBeGreaterThan(1);
+    series.forEach(({ label, records }) => {
+      const releases = (records as { denominator: number }[]).reduce(
+        (sum, r) => sum + r.denominator,
+        0,
+      );
+      const box = screen.getByRole("checkbox", {
+        name: new RegExp(`^${label}`),
+      });
+      const allSmall = series.every(({ records: rs }) =>
+        (rs as { denominator: number }[]).reduce(
+          (sum, r) => sum + r.denominator,
+          0,
+        ) < SMALL_GROUP_RELEASES,
+      );
+      // very small groups start hidden, unless every group is small
+      if (releases < SMALL_GROUP_RELEASES && !allSmall) {
+        expect(box).not.toBeChecked();
+      } else {
+        expect(box).toBeChecked();
+      }
+    });
+  };
 
-  const menuButton = screen.getByRole("button", {
-    name: "View Total",
-  });
-  fireEvent.click(menuButton);
-  fireEvent.click(screen.getByRole("option", { name: "Race or Ethnicity" }));
+  await check("Race or Ethnicity", "raceOrEthnicity");
+  await check("Gender", "gender");
+  await check("Age Group", "ageBucket");
+});
 
-  // pause for animated transition
-  await waitForElementToBeRemoved(totalChart);
-
-  const raceCharts = screen.getAllByRole("group", {
-    name: "8 bars in a bar chart",
-  });
-  expect(raceCharts.length).toBe(5);
-
-  fireEvent.click(menuButton);
-  fireEvent.click(screen.getByRole("option", { name: "Gender" }));
-
-  // pause for animated transition
-  await waitForElementToBeRemoved(raceCharts[0]);
-
-  const genderCharts = screen.getAllByRole("group", {
-    name: "8 bars in a bar chart",
-  });
-  expect(genderCharts.length).toBe(2);
-
-  fireEvent.click(menuButton);
-  fireEvent.click(screen.getByRole("option", { name: "Age Group" }));
-
-  // pause for animated transition
-  await waitForElementToBeRemoved(genderCharts[0]);
-
-  expect(
-    screen.getAllByRole("group", { name: "8 bars in a bar chart" }).length,
-  ).toBe(7);
+test("rates are each group's own rate, not a share of all releases", () => {
+  const rows = toRateClusters([
+    {
+      label: "Big",
+      records: [
+        { label: "2020", value: 300, pct: 0.3, color: "", denominator: 1000 },
+      ],
+    },
+    {
+      label: "Small",
+      records: [
+        { label: "2020", value: 3, pct: 0.3, color: "", denominator: 10 },
+      ],
+    },
+  ]);
+  expect(rows).toEqual([{ label: "2020", Big: 0.3, Small: 0.3 }]);
 });
 
 test("followup period filter", async () => {
   renderWithStore(<VizRecidivismRateSingleFollowup metric={metric} />);
-
   await when(() => !metric.isLoading);
 
   const menuButton = screen.getByRole("button", {
@@ -157,19 +160,13 @@ test("followup period filter", async () => {
   });
   fireEvent.click(menuButton);
   fireEvent.click(screen.getByRole("option", { name: "1 Year" }));
-
-  const oneYearChart = await screen.findByRole("group", {
-    name: "10 bars in a bar chart",
-    hidden: true,
-  });
-  expect(oneYearChart).toBeVisible();
-
   expect(menuButton).toHaveTextContent("1 Year");
+  expect(await screen.findByText(/returned within 1 year\./)).toBeInTheDocument();
+  expect(toRateClusters(metric.singleFollowupDemographics ?? [])).toHaveLength(10);
+
   fireEvent.click(menuButton);
   fireEvent.click(screen.getByRole("option", { name: "5 Years" }));
-
-  expect(
-    screen.getByRole("group", { name: "6 bars in a bar chart" }),
-  ).toBeVisible();
   expect(menuButton).toHaveTextContent("5 Years");
+  expect(await screen.findByText(/returned within 5 years\./)).toBeInTheDocument();
+  expect(toRateClusters(metric.singleFollowupDemographics ?? [])).toHaveLength(6);
 });
