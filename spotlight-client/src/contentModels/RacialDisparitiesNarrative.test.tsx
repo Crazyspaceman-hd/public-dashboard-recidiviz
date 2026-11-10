@@ -265,3 +265,54 @@ describe("supervision types", () => {
     });
   });
 });
+
+describe("categories missing from the data", () => {
+  // the shared demo data has no ASIAN row (as in Pennsylvania's real data)
+  const buildWithAsian = (defaultCategory?: RaceIdentifier) =>
+    RacialDisparitiesNarrative.build({
+      tenantId: testTenantId,
+      content: contentFixture.racialDisparitiesNarrative,
+      categoryFilter: ["BLACK", "WHITE", "ASIAN"],
+      defaultCategory,
+    });
+
+  test("are not offered once data has loaded", async () => {
+    const withAsian = buildWithAsian();
+    expect(withAsian.availableCategories.map((c) => c.identifier)).toContain(
+      "ASIAN",
+    );
+
+    await withAsian.hydrate();
+
+    reactImmediately(() => {
+      expect(
+        withAsian.availableCategories.map((c) => c.identifier),
+      ).toEqual(["BLACK", "WHITE"]);
+    });
+    expect.hasAssertions();
+  });
+
+  test("cannot be selected", async () => {
+    const withAsian = buildWithAsian();
+    await withAsian.hydrate();
+
+    runInAction(() => withAsian.setSelectedCategory("ASIAN"));
+
+    reactImmediately(() => {
+      expect(withAsian.selectedCategory).toBe("BLACK");
+      expect(withAsian.beforeCorrections).toBeDefined();
+    });
+    expect.hasAssertions();
+  });
+
+  test("are replaced when used as the default", async () => {
+    const withAsian = buildWithAsian("ASIAN");
+    await withAsian.hydrate();
+
+    reactImmediately(() => {
+      expect(withAsian.selectedCategory).toBe("BLACK");
+      expect(withAsian.beforeCorrections).toBeDefined();
+    });
+    expect.hasAssertions();
+  });
+});

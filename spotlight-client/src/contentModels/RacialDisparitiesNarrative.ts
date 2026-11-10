@@ -259,6 +259,11 @@ export default class RacialDisparitiesNarrative implements Hydratable {
         this.records = fetchedData.reduce((mapping, record) => {
           return { ...mapping, [record.raceOrEthnicity]: record };
         }, {} as RecordsMapping);
+        // the default category may not exist in this tenant's data
+        if (!this.hasDataFor(this.selectedCategory)) {
+          const [firstAvailable] = this.availableCategories;
+          if (firstAvailable) this.selectedCategory = firstAvailable.identifier;
+        }
         this.isLoading = false;
       });
     } catch (e: any) {
@@ -267,6 +272,32 @@ export default class RacialDisparitiesNarrative implements Hydratable {
         this.error = e;
       });
     }
+  }
+
+  /**
+   * Whether the data has a record for this category. Before data loads,
+   * every category is assumed to have data.
+   */
+  hasDataFor(category: RaceIdentifier): boolean {
+    return this.records === undefined || this.records[category] !== undefined;
+  }
+
+  /**
+   * The configured categories that actually appear in the data, so the filter
+   * never offers a group the tenant does not publish (e.g. no Asian row for
+   * Pennsylvania); selecting one would leave every chart without a record.
+   */
+  get availableCategories(): RaceOrEthnicityCategory[] {
+    return this.allCategories.filter(({ identifier }) =>
+      this.hasDataFor(identifier as RaceIdentifier),
+    );
+  }
+
+  /**
+   * Changes the selected category, ignoring categories with no data.
+   */
+  setSelectedCategory(category: RaceIdentifier): void {
+    if (this.hasDataFor(category)) this.selectedCategory = category;
   }
 
   get selectedCategoryLabel(): string {

@@ -25,6 +25,7 @@ import AuthWall from "./AuthWall";
 import { FOOTER_HEIGHT, NAV_BAR_HEIGHT } from "./constants";
 import GlobalStyles from "./GlobalStyles";
 import NotFound from "./NotFound";
+import PageErrorBoundary from "./PageErrorBoundary";
 import PageHome from "./PageHome";
 import PageNarrative from "./PageNarrative";
 import PageTenant from "./PageTenant";
@@ -64,25 +65,27 @@ const App: React.FC = () => {
         <AuthWall>
           <SiteNavigation />
           <Main>
-            <Router>
-              {/*
-                NOTE: every leaf route component in this router should be wrapped
-                by the withRouteSync higher-order component to keep data and UI in sync!
-              */}
-              {/*
-                this was the ND homepage for v1;
-                let's make sure people who bookmarked it are not lost
-              */}
-              <Redirect from="/us_nd/overview" to="/us-nd" noThrow />
-              <PageHome path="/" />
-              <PassThroughPage path="/:tenantId">
-                <PageTenant path="/" />
-                <PageNarrative
-                  path={`/${NarrativesSlug}/:narrativeTypeId/*sectionNumber`}
-                />
-                <PageNotFound path="/*" />
-              </PassThroughPage>
-            </Router>
+            <PageErrorBoundary>
+              <Router>
+                {/*
+                  NOTE: every leaf route component in this router should be wrapped
+                  by the withRouteSync higher-order component to keep data and UI in sync!
+                */}
+                {/*
+                  this was the ND homepage for v1;
+                  let's make sure people who bookmarked it are not lost
+                */}
+                <Redirect from="/us_nd/overview" to="/us-nd" noThrow />
+                <PageHome path="/" />
+                <PassThroughPage path="/:tenantId">
+                  <PageTenant path="/" />
+                  <PageNarrative
+                    path={`/${NarrativesSlug}/:narrativeTypeId/*sectionNumber`}
+                  />
+                  <PageNotFound path="/*" />
+                </PassThroughPage>
+              </Router>
+            </PageErrorBoundary>
             <ScrollManager />
           </Main>
           <SiteFooter />

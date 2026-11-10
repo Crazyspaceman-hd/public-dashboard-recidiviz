@@ -33,12 +33,12 @@ const RaceOrEthnicityFilterSelect: React.FC<RaceOrEthnicityFilterSelectProps> = 
     "change race/ethnicity filter",
     (newFilter: string) => {
       // safe assertion because this is the id type in our options array
-      // eslint-disable-next-line no-param-reassign
-      narrative.selectedCategory = newFilter as RaceIdentifier;
+      narrative.setSelectedCategory(newFilter as RaceIdentifier);
     }
   );
 
-  const dropdownOptions = narrative.allCategories.map(
+  // only groups that appear in the data; others would leave the charts empty
+  const dropdownOptions = narrative.availableCategories.map(
     ({ identifier, label }) => ({ label, id: identifier })
   );
 
