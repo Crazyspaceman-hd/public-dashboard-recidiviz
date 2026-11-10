@@ -32,7 +32,6 @@ export const useInternalNavigation = (): {
   alwaysExpanded: boolean;
   currentSectionNumber: number;
   fixedHeightSections: number[];
-  initialScrollComplete: boolean;
   onSectionInViewChange: (props: {
     inView: boolean;
     sectionNumber: number;
@@ -174,7 +173,6 @@ export const useInternalNavigation = (): {
     alwaysExpanded,
     currentSectionNumber,
     fixedHeightSections,
-    initialScrollComplete,
     onSectionInViewChange,
     scrollToSection,
     sectionsContainerRef,
