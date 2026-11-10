@@ -50,6 +50,13 @@ export type RacialDisparitiesRecord = {
   probation: CountsForSupervisionType;
   totalIncarceratedPopulation36Mo: number;
   totalStatePopulation: number;
+  // optional: one county's population, people arrested, people found guilty in court,
+  // and people under DOC control (only present when a tenant supplies a county example;
+  // the court stage is optional within it)
+  exampleCountyPopulation?: number;
+  exampleCountyArrested?: number;
+  exampleCountyFoundGuilty?: number;
+  exampleCountyUnderControl?: number;
 };
 
 /**

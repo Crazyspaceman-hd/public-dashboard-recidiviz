@@ -36,8 +36,11 @@ test("renders all the sections", async () => {
     "Racial Disparities",
   );
 
+  // the county example only appears when a tenant's data includes example-county
+  // fields; the shared test data does not, so it is checked separately below
+  const { countyExample, ...alwaysShown } = narrativeContent.sections;
   return Promise.all(
-    Object.values(narrativeContent.sections).map(async (section) => {
+    Object.values(alwaysShown).map(async (section) => {
       expect(
         await screen.findByRole("heading", {
           name: section.title,
@@ -47,6 +50,18 @@ test("renders all the sections", async () => {
       ).toBeInTheDocument();
     }),
   );
+});
+
+test("county example section is omitted when the data has no example county", async () => {
+  expect(await screen.findByTestId("PageTitle")).toHaveTextContent(
+    "Racial Disparities",
+  );
+  expect(
+    screen.queryByRole("heading", {
+      name: narrativeContent.sections.countyExample?.title,
+      hidden: true,
+    }),
+  ).toBeNull();
 });
 
 test("renders dynamic text", async () => {

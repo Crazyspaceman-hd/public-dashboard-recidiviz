@@ -431,7 +431,7 @@ const content: TenantContent = {
           metricTypeId: "PrisonRecidivismRateHistorical",
           title: "How many people end up back in prison?",
           body:
-            "After release from prison, a significant proportion of formerly incarcerated individuals end up back in prison. This is typically termed “recidivism.” This chart shows recidivism as reincarceration; that is, the proportion of individuals who are incarcerated again at some point after their release.<p><strong>Note:</strong> Race or Ethnicity, Gender, and Age Group views are disabled unless a single Cohort is selected.</p>",
+            "After release from prison, a significant proportion of formerly incarcerated individuals end up back in prison. This is typically termed “recidivism.” This chart shows recidivism as reincarceration; that is, the proportion of individuals who are incarcerated again at some point after their release.<p>The line combines all release years; the shaded band shows the range of individual release years.</p>",
         },
         {
           metricTypeId: "PrisonRecidivismRateSingleFollowupHistorical",
@@ -492,7 +492,7 @@ const content: TenantContent = {
         {
           title: "How many people return after completing probation?",
           body:
-            "Some people who successfully complete probation later return to the justice system, either on a new period of supervision or in prison. This chart shows the proportion of people who return at some point after completing probation.<p><strong>Note:</strong> Race or Ethnicity, Gender, and Age Group views are disabled unless a single Cohort is selected.</p>",
+            "Some people who successfully complete probation later return to the justice system, either on a new period of supervision or in prison. This chart shows the proportion of people who return at some point after completing probation.<p>The line combines all release years; the shaded band shows the range of individual release years.</p>",
           metricTypeId: "ProbationRecidivismRateHistorical",
         },
         {
@@ -543,7 +543,7 @@ const content: TenantContent = {
         {
           title: "How many people return after completing parole?",
           body:
-            "Some people who successfully complete parole later return to the justice system, either on a new period of supervision or in prison. This chart shows the proportion of people who return at some point after completing parole.<p><strong>Note:</strong> Race or Ethnicity, Gender, and Age Group views are disabled unless a single Cohort is selected.</p>",
+            "Some people who successfully complete parole later return to the justice system, either on a new period of supervision or in prison. This chart shows the proportion of people who return at some point after completing parole.<p>The line combines all release years; the shaded band shows the range of individual release years.</p>",
           metricTypeId: "ParoleRecidivismRateHistorical",
         },
         {

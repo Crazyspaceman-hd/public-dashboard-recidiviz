@@ -27,8 +27,9 @@ import DemographicFilterSelect from "../DemographicFilterSelect";
 import MetricVizControls from "../MetricVizControls";
 import LocalityFilterSelect from "../LocalityFilterSelect";
 import Statistic from "../Statistic";
-import { animation } from "../UiLibrary";
+import { animation, colors } from "../UiLibrary";
 import { formatAsPct } from "../utils";
+import { getDemographicViewLabel } from "../demographics";
 import withMetricHydrator from "../withMetricHydrator";
 import VizNotes from "../VizNotes";
 
@@ -42,22 +43,24 @@ const CohortChartWrapper = styled.div`
   min-height: ${CHART_HEIGHT}px;
 `;
 
+// left-aligned so every row, including wrapped ones, starts under the caption
 const DemographicsWrapper = styled.div`
-  text-align: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: ${rem(8)} ${rem(48)};
+  justify-content: flex-start;
+  padding-bottom: ${rem(16)};
   width: 100%;
 `;
 
 const StatWrapper = styled.div`
-  display: inline-block;
-  padding: 0 ${rem(24)} ${rem(24)};
+  flex: 0 0 auto;
+`;
 
-  &:first-child {
-    padding-left: 0;
-  }
-
-  &:last-child {
-    padding-right: 0;
-  }
+const SectionCaption = styled.p`
+  color: ${colors.caption};
+  font-size: ${rem(13)};
+  margin: 0 0 ${rem(12)};
 `;
 
 const getCohortLabel = (id: string) => {
@@ -99,6 +102,10 @@ const VizSupervisionSuccessRate: React.FC<VizSupervisionSuccessRateProps> = ({
     animation.crossFade
   );
 
+  const localityLabel = metric.localityLabels.entries.find(
+    ({ id }) => id === localityId
+  )?.label;
+
   if (cohortRecords && demographicRecords) {
     return (
       <>
@@ -110,18 +117,16 @@ const VizSupervisionSuccessRate: React.FC<VizSupervisionSuccessRateProps> = ({
           metric={metric}
           smallData
         />
-        <CohortChartWrapper>
-          {cohortTransitions.map(({ item, key, props }) => (
-            <animated.div key={key} style={props}>
-              {item.cohortRecords && (
-                <RateCohorts
-                  data={item.cohortRecords}
-                  getBarLabel={getCohortLabel}
-                />
-              )}
-            </animated.div>
-          ))}
-        </CohortChartWrapper>
+        <SectionCaption>
+          Success rate over the last 3 years
+          {demographicView !== "total" && demographicView !== "nofilter"
+            ? `, by ${getDemographicViewLabel(
+                demographicView,
+                metric.demographicLabels
+              ).toLowerCase()}`
+            : ""}
+          {localityLabel ? ` (${localityLabel})` : ""}
+        </SectionCaption>
         <Measure
           bounds
           onResize={({ bounds }) => {
@@ -133,7 +138,7 @@ const VizSupervisionSuccessRate: React.FC<VizSupervisionSuccessRateProps> = ({
               style={{
                 ...demographicsWrapperStyles,
                 position: "relative",
-                marginTop: DEMOGRAPHICS_MARGIN,
+                marginBottom: DEMOGRAPHICS_MARGIN,
               }}
             >
               {demographicTransitions.map(({ item, key, props }) => (
@@ -156,6 +161,22 @@ const VizSupervisionSuccessRate: React.FC<VizSupervisionSuccessRateProps> = ({
             </animated.div>
           )}
         </Measure>
+        <SectionCaption>
+          Monthly success rate, everyone combined
+          {localityLabel ? ` (${localityLabel})` : ""}
+        </SectionCaption>
+        <CohortChartWrapper>
+          {cohortTransitions.map(({ item, key, props }) => (
+            <animated.div key={key} style={props}>
+              {item.cohortRecords && (
+                <RateCohorts
+                  data={item.cohortRecords}
+                  getBarLabel={getCohortLabel}
+                />
+              )}
+            </animated.div>
+          ))}
+        </CohortChartWrapper>
         <VizNotes unknowns={metric.unknowns} download={metric.download} />
       </>
     );

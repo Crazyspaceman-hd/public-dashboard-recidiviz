@@ -1,0 +1,274 @@
+{
+  "arrest_year": "2025",
+  "min_age": 18,
+  "census_estimate": "2024-07-01",
+  "fdc_snapshot": "2026-10-30",
+  "counties": [
+    "Broward County",
+    "Charlotte County",
+    "Clay County",
+    "Collier County",
+    "DeSoto County",
+    "Hillsborough County",
+    "Lake County",
+    "Leon County",
+    "Liberty County",
+    "Manatee County",
+    "Miami-Dade County",
+    "Orange County",
+    "St. Lucie County",
+    "Walton County"
+  ],
+  "excluded_counties": {
+    "Alachua County": [
+      "no person identifier on 100% of records"
+    ],
+    "Baker County": [
+      "no person identifier on 100% of records",
+      "race/ethnicity unknown for 100%"
+    ],
+    "Bay County": [
+      "race/ethnicity unknown for 62%"
+    ],
+    "Bradford County": [
+      "no person identifier on 100% of records",
+      "race/ethnicity unknown for 100%"
+    ],
+    "Brevard County": [
+      "race/ethnicity unknown for 90%"
+    ],
+    "Calhoun County": [
+      "incomplete reporting (1.8 people per 1,000 adults)",
+      "race/ethnicity unknown for 16%"
+    ],
+    "Citrus County": [
+      "incomplete reporting (2.4 people per 1,000 adults)",
+      "race/ethnicity unknown for 97%"
+    ],
+    "Columbia County": [
+      "no person identifier on 100% of records"
+    ],
+    "Dixie County": [
+      "no person identifier on 62% of records"
+    ],
+    "Duval County": [
+      "race/ethnicity unknown for 100%"
+    ],
+    "Escambia County": [
+      "no person identifier on 100% of records"
+    ],
+    "Flagler County": [
+      "no person identifier on 23% of records",
+      "race/ethnicity unknown for 60%"
+    ],
+    "Franklin County": [
+      "race/ethnicity unknown for 16%"
+    ],
+    "Gadsden County": [
+      "no person identifier on 14% of records"
+    ],
+    "Gilchrist County": [
+      "no person identifier on 100% of records",
+      "race/ethnicity unknown for 100%"
+    ],
+    "Glades County": [
+      "no person identifier on 100% of records",
+      "race/ethnicity unknown for 100%"
+    ],
+    "Gulf County": [
+      "race/ethnicity unknown for 18%"
+    ],
+    "Hamilton County": [
+      "no person identifier on 100% of records",
+      "race/ethnicity unknown for 100%"
+    ],
+    "Hardee County": [
+      "no person identifier on 100% of records",
+      "race/ethnicity unknown for 100%"
+    ],
+    "Hendry County": [
+      "no person identifier on 100% of records"
+    ],
+    "Hernando County": [
+      "no person identifier on 100% of records",
+      "race/ethnicity unknown for 100%"
+    ],
+    "Highlands County": [
+      "no person identifier on 100% of records",
+      "race/ethnicity unknown for 100%"
+    ],
+    "Holmes County": [
+      "race/ethnicity unknown for 68%"
+    ],
+    "Indian River County": [
+      "incomplete reporting (0.3 people per 1,000 adults)",
+      "race/ethnicity unknown for 55%"
+    ],
+    "Jackson County": [
+      "no person identifier on 99% of records"
+    ],
+    "Jefferson County": [
+      "race/ethnicity unknown for 13%"
+    ],
+    "Lafayette County": [
+      "no person identifier on 100% of records",
+      "race/ethnicity unknown for 100%"
+    ],
+    "Lee County": [
+      "race/ethnicity unknown for 20%"
+    ],
+    "Levy County": [
+      "race/ethnicity unknown for 17%"
+    ],
+    "Madison County": [
+      "no person identifier on 86% of records"
+    ],
+    "Marion County": [
+      "race/ethnicity unknown for 17%"
+    ],
+    "Martin County": [
+      "incomplete reporting (4.2 people per 1,000 adults)",
+      "race/ethnicity unknown for 19%"
+    ],
+    "Monroe County": [
+      "no person identifier on 100% of records",
+      "race/ethnicity unknown for 100%"
+    ],
+    "Nassau County": [
+      "race/ethnicity unknown for 100%"
+    ],
+    "Okaloosa County": [
+      "incomplete reporting (0.4 people per 1,000 adults)",
+      "race/ethnicity unknown for 32%"
+    ],
+    "Okeechobee County": [
+      "race/ethnicity unknown for 25%"
+    ],
+    "Osceola County": [
+      "race/ethnicity unknown for 43%"
+    ],
+    "Palm Beach County": [
+      "race/ethnicity unknown for 24%"
+    ],
+    "Pasco County": [
+      "race/ethnicity unknown for 10%"
+    ],
+    "Pinellas County": [
+      "race/ethnicity unknown for 100%"
+    ],
+    "Polk County": [
+      "incomplete reporting (0.0 people per 1,000 adults)"
+    ],
+    "Putnam County": [
+      "no person identifier on 99% of records",
+      "race/ethnicity unknown for 100%"
+    ],
+    "Santa Rosa County": [
+      "no person identifier on 100% of records"
+    ],
+    "Sarasota County": [
+      "race/ethnicity unknown for 100%"
+    ],
+    "Seminole County": [
+      "race/ethnicity unknown for 45%"
+    ],
+    "St. Johns County": [
+      "no person identifier on 100% of records",
+      "race/ethnicity unknown for 100%"
+    ],
+    "Sumter County": [
+      "no person identifier on 100% of records"
+    ],
+    "Suwannee County": [
+      "no person identifier on 99% of records"
+    ],
+    "Taylor County": [
+      "no person identifier on 100% of records"
+    ],
+    "Union County": [
+      "no person identifier on 100% of records",
+      "race/ethnicity unknown for 100%"
+    ],
+    "Volusia County": [
+      "race/ethnicity unknown for 99%"
+    ],
+    "Wakulla County": [
+      "no person identifier on 98% of records"
+    ],
+    "Washington County": [
+      "no person identifier on 100% of records"
+    ]
+  },
+  "share_of_state_population": 0.44941794164859994,
+  "population": {
+    "WHITE": 3296526,
+    "BLACK": 1423331,
+    "HISPANIC": 3338141,
+    "ASIAN": 298268,
+    "AMERICAN_INDIAN_ALASKAN_NATIVE": 16219,
+    "OTHER": 111705,
+    "TOTAL": 8484191
+  },
+  "arrested": {
+    "WHITE": 47055,
+    "BLACK": 57640,
+    "HISPANIC": 38150,
+    "ASIAN": 731,
+    "AMERICAN_INDIAN_ALASKAN_NATIVE": 171,
+    "OTHER": 1,
+    "UNKNOWN": 1696,
+    "TOTAL": 145444
+  },
+  "under_fdc_control": {
+    "WHITE": 35685,
+    "BLACK": 36638,
+    "HISPANIC": 5619,
+    "ASIAN": 50,
+    "AMERICAN_INDIAN_ALASKAN_NATIVE": 63,
+    "OTHER": 539,
+    "UNKNOWN": 0,
+    "TOTAL": 78594
+  },
+  "example_county": {
+    "name": "Hillsborough County",
+    "population": {
+      "WHITE": 584535,
+      "BLACK": 193270,
+      "HISPANIC": 377781,
+      "ASIAN": 64283,
+      "AMERICAN_INDIAN_ALASKAN_NATIVE": 2826,
+      "OTHER": 21886,
+      "TOTAL": 1244581
+    },
+    "arrested": {
+      "WHITE": 10978,
+      "BLACK": 13452,
+      "HISPANIC": 8594,
+      "ASIAN": 323,
+      "AMERICAN_INDIAN_ALASKAN_NATIVE": 28,
+      "OTHER": 1,
+      "UNKNOWN": 152,
+      "TOTAL": 33528
+    },
+    "found_guilty": {
+      "WHITE": 8514,
+      "BLACK": 7049,
+      "HISPANIC": 2667,
+      "ASIAN": 155,
+      "AMERICAN_INDIAN_ALASKAN_NATIVE": 25,
+      "OTHER": 0,
+      "UNKNOWN": 487,
+      "TOTAL": 18897
+    },
+    "under_fdc_control": {
+      "WHITE": 5040,
+      "BLACK": 5740,
+      "HISPANIC": 1132,
+      "ASIAN": 11,
+      "AMERICAN_INDIAN_ALASKAN_NATIVE": 6,
+      "OTHER": 87,
+      "UNKNOWN": 0,
+      "TOTAL": 12016
+    }
+  }
+}

@@ -1,0 +1,361 @@
+[
+  {
+    "id": "ALL",
+    "label": "All Facilities"
+  },
+  {
+    "id": "GROUP_MAJOR_PRISONS",
+    "label": "All major prisons",
+    "group": "Major prisons"
+  },
+  {
+    "id": "APALACHEE",
+    "label": "Apalachee (all units)",
+    "group": "Major prisons"
+  },
+  {
+    "id": "AVON_PARK",
+    "label": "Avon Park Correctional Institution",
+    "group": "Major prisons"
+  },
+  {
+    "id": "BAY",
+    "label": "Bay Correctional Facility",
+    "group": "Major prisons"
+  },
+  {
+    "id": "BLACKWATER",
+    "label": "Blackwater Correctional Facility",
+    "group": "Major prisons"
+  },
+  {
+    "id": "CALHOUN",
+    "label": "Calhoun Correctional Institution",
+    "group": "Major prisons"
+  },
+  {
+    "id": "CFRC",
+    "label": "Central Florida Reception Center",
+    "group": "Major prisons"
+  },
+  {
+    "id": "CENTURY",
+    "label": "Century Correctional Institution",
+    "group": "Major prisons"
+  },
+  {
+    "id": "CHARLOTTE",
+    "label": "Charlotte Correctional Institution",
+    "group": "Major prisons"
+  },
+  {
+    "id": "COLUMBIA",
+    "label": "Columbia Correctional Institution",
+    "group": "Major prisons"
+  },
+  {
+    "id": "CROSS_CITY",
+    "label": "Cross City Correctional Institution",
+    "group": "Major prisons"
+  },
+  {
+    "id": "DADE",
+    "label": "Dade Correctional Institution",
+    "group": "Major prisons"
+  },
+  {
+    "id": "DESOTO",
+    "label": "DeSoto (all units)",
+    "group": "Major prisons"
+  },
+  {
+    "id": "EVERGLADES",
+    "label": "Everglades Correctional Institution",
+    "group": "Major prisons"
+  },
+  {
+    "id": "FLORIDA_STATE_PRISON",
+    "label": "Florida State Prison",
+    "group": "Major prisons"
+  },
+  {
+    "id": "FL_WOMENS_RECPN_CTR",
+    "label": "Florida Women's Reception Center",
+    "group": "Major prisons"
+  },
+  {
+    "id": "FRANKLIN",
+    "label": "Franklin Correctional Institution",
+    "group": "Major prisons"
+  },
+  {
+    "id": "GADSDEN",
+    "label": "Gadsden Correctional Facility",
+    "group": "Major prisons"
+  },
+  {
+    "id": "GRACEVILLE",
+    "label": "Graceville Correctional Facility",
+    "group": "Major prisons"
+  },
+  {
+    "id": "GULF",
+    "label": "Gulf Correctional Institution",
+    "group": "Major prisons"
+  },
+  {
+    "id": "HAMILTON",
+    "label": "Hamilton Correctional Institution",
+    "group": "Major prisons"
+  },
+  {
+    "id": "HARDEE",
+    "label": "Hardee Correctional Institution",
+    "group": "Major prisons"
+  },
+  {
+    "id": "HERNANDO",
+    "label": "Hernando Correctional Institution",
+    "group": "Major prisons"
+  },
+  {
+    "id": "HOLMES",
+    "label": "Holmes Correctional Institution",
+    "group": "Major prisons"
+  },
+  {
+    "id": "HOMESTEAD",
+    "label": "Homestead Correctional Institution",
+    "group": "Major prisons"
+  },
+  {
+    "id": "JACKSON",
+    "label": "Jackson Correctional Institution",
+    "group": "Major prisons"
+  },
+  {
+    "id": "JEFFERSON",
+    "label": "Jefferson Correctional Institution",
+    "group": "Major prisons"
+  },
+  {
+    "id": "LAKE_CITY",
+    "label": "Lake City Correctional Facility",
+    "group": "Major prisons"
+  },
+  {
+    "id": "LAKE",
+    "label": "Lake Correctional Institution",
+    "group": "Major prisons"
+  },
+  {
+    "id": "LANCASTER",
+    "label": "Lancaster Correctional Institution",
+    "group": "Major prisons"
+  },
+  {
+    "id": "LAWTEY",
+    "label": "Lawtey Correctional Institution",
+    "group": "Major prisons"
+  },
+  {
+    "id": "LIBERTY",
+    "label": "Liberty Correctional Institution",
+    "group": "Major prisons"
+  },
+  {
+    "id": "LOWELL",
+    "label": "Lowell Correctional Institution",
+    "group": "Major prisons"
+  },
+  {
+    "id": "MADISON",
+    "label": "Madison Correctional Institution",
+    "group": "Major prisons"
+  },
+  {
+    "id": "MARION",
+    "label": "Marion Correctional Institution",
+    "group": "Major prisons"
+  },
+  {
+    "id": "MARTIN",
+    "label": "Martin Correctional Institution",
+    "group": "Major prisons"
+  },
+  {
+    "id": "MAYO",
+    "label": "Mayo Correctional Institution Annex",
+    "group": "Major prisons"
+  },
+  {
+    "id": "MOORE_HAVEN",
+    "label": "Moore Haven Correctional Facility",
+    "group": "Major prisons"
+  },
+  {
+    "id": "NWFRC",
+    "label": "Northwest Florida Reception Center",
+    "group": "Major prisons"
+  },
+  {
+    "id": "OKALOOSA",
+    "label": "Okaloosa Correctional Institution",
+    "group": "Major prisons"
+  },
+  {
+    "id": "OKEECHOBEE",
+    "label": "Okeechobee Correctional Institution",
+    "group": "Major prisons"
+  },
+  {
+    "id": "POLK",
+    "label": "Polk Correctional Institution",
+    "group": "Major prisons"
+  },
+  {
+    "id": "PUTNAM",
+    "label": "Putnam Correctional Institution",
+    "group": "Major prisons"
+  },
+  {
+    "id": "QUINCY",
+    "label": "Quincy Annex",
+    "group": "Major prisons"
+  },
+  {
+    "id": "R_M_C",
+    "label": "Reception and Medical Center",
+    "group": "Major prisons"
+  },
+  {
+    "id": "SANTA_ROSA",
+    "label": "Santa Rosa Correctional Institution",
+    "group": "Major prisons"
+  },
+  {
+    "id": "SOUTH_BAY",
+    "label": "South Bay Correctional Facility",
+    "group": "Major prisons"
+  },
+  {
+    "id": "S_F_R_C",
+    "label": "South Florida Reception Center",
+    "group": "Major prisons"
+  },
+  {
+    "id": "SUMTER",
+    "label": "Sumter Correctional Institution",
+    "group": "Major prisons"
+  },
+  {
+    "id": "SUWANNEE",
+    "label": "Suwannee Correctional Institution",
+    "group": "Major prisons"
+  },
+  {
+    "id": "TAYLOR",
+    "label": "Taylor Correctional Institution",
+    "group": "Major prisons"
+  },
+  {
+    "id": "TOMOKA",
+    "label": "Tomoka Correctional Institution",
+    "group": "Major prisons"
+  },
+  {
+    "id": "UNION",
+    "label": "Union Correctional Institution",
+    "group": "Major prisons"
+  },
+  {
+    "id": "WAKULLA",
+    "label": "Wakulla Correctional Institution",
+    "group": "Major prisons"
+  },
+  {
+    "id": "WALTON",
+    "label": "Walton Correctional Institution",
+    "group": "Major prisons"
+  },
+  {
+    "id": "ZEPHYRHILLS",
+    "label": "Zephyrhills Correctional Institution",
+    "group": "Major prisons"
+  },
+  {
+    "id": "GROUP_WORK_CAMPS",
+    "label": "All stand-alone work camps",
+    "group": "Stand-alone work camps"
+  },
+  {
+    "id": "BAKER",
+    "label": "Baker Work Camp",
+    "group": "Stand-alone work camps"
+  },
+  {
+    "id": "FT_MYERS",
+    "label": "Ft. Myers Work Camp",
+    "group": "Stand-alone work camps"
+  },
+  {
+    "id": "GAINESVILLE",
+    "label": "Gainesville Work Camp",
+    "group": "Stand-alone work camps"
+  },
+  {
+    "id": "GROUP_REENTRY",
+    "label": "All re-entry centers",
+    "group": "Re-entry centers"
+  },
+  {
+    "id": "BAKER_RE_ENTRY_CENTR",
+    "label": "Baker Re-Entry Center",
+    "group": "Re-entry centers"
+  },
+  {
+    "id": "EVERGLADES_RE_ENTRY",
+    "label": "Everglades Re-Entry",
+    "group": "Re-entry centers"
+  },
+  {
+    "id": "GADSDEN_RE_ENTRY_CTR",
+    "label": "Gadsden Re-Entry Center",
+    "group": "Re-entry centers"
+  },
+  {
+    "id": "REENTRY_CTR_OF_OCALA",
+    "label": "Reentry Center of Ocala",
+    "group": "Re-entry centers"
+  },
+  {
+    "id": "SAGO_PALM_RE_ENTRY_C",
+    "label": "Sago Palm Re-Entry Center",
+    "group": "Re-entry centers"
+  },
+  {
+    "id": "COMMUNITY_RELEASE_CENTERS",
+    "label": "Community Release Centers (all)",
+    "group": "Community release (work release)"
+  },
+  {
+    "id": "GROUP_HELD_ELSEWHERE",
+    "label": "All held outside FDC facilities",
+    "group": "Held outside FDC facilities"
+  },
+  {
+    "id": "COUNTY_CUSTODY",
+    "label": "Florida County Custody",
+    "group": "Held outside FDC facilities"
+  },
+  {
+    "id": "OTHER_AGENCY",
+    "label": "Other Agencies (federal, immigration, other)",
+    "group": "Held outside FDC facilities"
+  },
+  {
+    "id": "OUT_OF_STATE",
+    "label": "Out of State Custody",
+    "group": "Held outside FDC facilities"
+  }
+]

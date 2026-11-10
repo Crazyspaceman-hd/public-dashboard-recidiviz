@@ -140,16 +140,26 @@ function fetchFilesFromGCS(tenantId, files) {
 
 /**
  * Retrieves the specified files from the `demo_data` directory.
+ *
+ * If `demo_data/<TENANT_ID>/` exists, files are read only from there, so a tenant with its own
+ * fixtures never silently receives another state's data; a missing file is an error.
+ * Tenants without their own directory fall back to the shared fixtures in `demo_data/`.
  * @param {string} tenantId - tenant to fetch from
  * @param {string[]} files - list of filenames to fetch
  * @return {Promise<FetchedFile>[]} one promise per file that will resolve to its deserialized contents
  */
 function fetchFilesFromLocal(tenantId, files) {
   const promises = [];
+  const demoRoot = path.resolve(__dirname, "./demo_data");
+  const tenantDir = path.join(demoRoot, path.basename(String(tenantId)));
+  const baseDir =
+    tenantId && fs.existsSync(tenantDir) && fs.statSync(tenantDir).isDirectory()
+      ? tenantDir
+      : demoRoot;
 
   files.forEach((filename) => {
     const fileKey = filename.replace(".json", "");
-    const filePath = path.resolve(__dirname, `./demo_data/${filename}`);
+    const filePath = path.join(baseDir, filename);
 
     promises.push(
       asyncReadFile(filePath).then((contents) => ({ fileKey, contents }))

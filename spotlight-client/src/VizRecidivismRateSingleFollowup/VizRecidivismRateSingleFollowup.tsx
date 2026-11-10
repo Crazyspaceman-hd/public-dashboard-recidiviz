@@ -15,63 +15,58 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 // =============================================================================
 
+import { ascending, sum } from "d3-array";
 import { observer } from "mobx-react-lite";
-import React, { useState } from "react";
-import Measure from "react-measure";
-import { animated, useTransition } from "react-spring/web.cjs";
+import { rem } from "polished";
+import React from "react";
 import styled from "styled-components/macro";
+import { TooltipContentFunction } from "../charts";
 import {
-  BarChartTrellis,
-  CommonDataPoint,
-  singleChartHeight,
-  TooltipContentFunction,
-} from "../charts";
+  BarChartCluster,
+  BarChartClusterRecord,
+} from "../charts/BarChartCluster";
+import SeriesToggles, {
+  seriesColorMap,
+  useHiddenSeries,
+} from "../charts/SeriesToggles";
 import RecidivismRateMetric from "../contentModels/RecidivismRateMetric";
+import { DemographicCategoryRateRecords } from "../contentModels/types";
 import DemographicFilterSelect from "../DemographicFilterSelect";
 import MetricVizControls from "../MetricVizControls";
 import ReturnTypeFilterSelect from "../ReturnTypeFilterSelect";
-import { animation, AutoHeightTransition } from "../UiLibrary";
+import { colors } from "../UiLibrary";
 import { formatAsNumber, formatAsPct } from "../utils";
 import VizNotes from "../VizNotes";
 import withMetricHydrator from "../withMetricHydrator";
 import FollowupPeriodFilterSelect from "./FollowupPeriodFilterSelect";
 
-const ChartsWrapper = styled.div`
-  position: relative;
+/** groups with fewer releases than this start hidden: their rates are too noisy */
+export const SMALL_GROUP_RELEASES = 100;
+
+const ClusterNote = styled.p`
+  color: ${colors.caption};
+  font-size: ${rem(13)};
+  margin-top: ${rem(8)};
 `;
 
-const getTooltipProps: TooltipContentFunction = (columnData) => {
-  const {
-    summary: [
-      {
-        data: { label, pct, value, denominator },
-      },
-    ],
-  } = columnData as {
-    // can't find any Semiotic type definition that describes what is actually
-    // passed to this function, but the part we care about looks like this
-    // (the properties are picked up from the input data)
-    summary: { data: CommonDataPoint & { denominator: number } }[];
-  };
-
-  const records = [];
-
-  if (Number.isNaN(value)) {
-    records.push({
-      value: `${formatAsPct(pct as number)} of ${formatAsNumber(denominator)}`,
+/**
+ * One cluster per release year, one column per group; each value is that group's
+ * own return rate (rates, unlike shares, are comparable across group sizes).
+ */
+export function toRateClusters(
+  series: DemographicCategoryRateRecords[]
+): BarChartClusterRecord[] {
+  const cohorts = Array.from(
+    new Set(series.flatMap(({ records }) => records.map(({ label }) => label)))
+  ).sort((a, b) => ascending(Number(a), Number(b)));
+  return cohorts.map((cohort) => {
+    const row: BarChartClusterRecord = { label: cohort };
+    series.forEach(({ label, records }) => {
+      row[label] = records.find((r) => r.label === cohort)?.pct ?? 0;
     });
-  } else {
-    records.push({
-      pct,
-      value: `${formatAsNumber(value)} of ${formatAsNumber(denominator)}`,
-    });
-  }
-
-  return {
-    title: `${label}`,
-    records,
-  };
-};
+    return row;
+  });
+}
 
 type VizRecidivismRateSingleFollowupProps = {
   metric: RecidivismRateMetric;
@@ -88,78 +83,108 @@ const VizRecidivismRateSingleFollowup: React.FC<VizRecidivismRateSingleFollowupP
     unknowns,
   } = metric;
 
-  const chartTransitions = useTransition(
-    { demographicView, singleFollowupDemographics },
-    (item) => item.demographicView,
-    animation.crossFade
+  const releasesByGroup: Record<string, number> = Object.fromEntries(
+    (singleFollowupDemographics ?? []).map(({ label, records }) => [
+      label,
+      sum(records as { denominator: number }[], (r) => r.denominator),
+    ])
   );
-
-  const [containerWidth, setContainerWidth] = useState<number>();
-  // this is NOT a sophisticated heuristic, but the bar labels
-  // (which are years) tend to get cramped around this size
-  const useAngledLabels =
-    typeof containerWidth === "number" &&
-    containerWidth < 400 &&
-    followUpYears === 1;
+  const allGroups = Object.keys(releasesByGroup);
+  const belowThreshold = allGroups.filter(
+    (g) => releasesByGroup[g] < SMALL_GROUP_RELEASES
+  );
+  // never start with every group hidden (e.g. a small state where all are small)
+  const smallGroups =
+    allGroups.length > 1 && belowThreshold.length < allGroups.length
+      ? belowThreshold
+      : [];
+  const [hiddenGroups, toggleGroup] = useHiddenSeries(
+    demographicView,
+    smallGroups
+  );
 
   if (demographicView === "nofilter")
     throw new Error(
       "Unable to display this metric without demographic filter."
     );
 
-  if (singleFollowupDemographics) {
-    return (
-      <Measure
-        bounds
-        onResize={({ bounds }) => {
-          if (bounds) {
-            setContainerWidth(bounds.width);
-          }
-        }}
-      >
-        {({ measureRef }) => (
-          <>
-            <MetricVizControls
-              filters={[
-                <FollowupPeriodFilterSelect metric={metric} />,
-                metric.returnType !== undefined && (
-                  <ReturnTypeFilterSelect metric={metric} />
-                ),
-                includesDemographics && (
-                  <DemographicFilterSelect metric={metric} />
-                ),
-              ]}
-              metric={metric}
-              smallData
-            />
-            <AutoHeightTransition initialHeight={singleChartHeight}>
-              <ChartsWrapper ref={measureRef}>
-                {chartTransitions.map(({ item, key, props }) => (
-                  <animated.div key={key} style={props}>
-                    {
-                      // for type safety we have to check this again
-                      // but it should always be defined if we've gotten this far
-                      item.singleFollowupDemographics && (
-                        <BarChartTrellis
-                          angledLabels={useAngledLabels}
-                          barAxisLabel="Release Year"
-                          data={item.singleFollowupDemographics}
-                          getTooltipProps={getTooltipProps}
-                        />
-                      )
-                    }
-                  </animated.div>
-                ))}
-              </ChartsWrapper>
-            </AutoHeightTransition>
-            <VizNotes unknowns={unknowns} download={metric.download} />
-          </>
-        )}
-      </Measure>
-    );
-  }
+  if (!singleFollowupDemographics) return null;
 
-  return null;
+  const groups = singleFollowupDemographics.map(({ label }) => label);
+  const visibleGroups = groups.filter((g) => !hiddenGroups.includes(g));
+  const seriesColors = seriesColorMap(groups);
+  const years = followUpYears ?? 1;
+  const withinYears = `within ${years} year${years === 1 ? "" : "s"}`;
+
+  const getTooltipProps: TooltipContentFunction = (columnData) => {
+    const group = String(columnData.rName);
+    const cohort = String((columnData.data as BarChartClusterRecord).label);
+    // the records type is an intersection, so name the fields we use explicitly
+    const groupRecords = singleFollowupDemographics.find(
+      ({ label }) => label === group
+    )?.records as
+      | { label: string; pct: number; value: number; denominator: number }[]
+      | undefined;
+    const record = groupRecords?.find(({ label }) => label === cohort);
+    const rate = record?.pct ?? 0;
+    const released = record?.denominator ?? 0;
+    const returned = record?.value;
+    return {
+      title: `${groups.length > 1 ? `${group}, ` : ""}released ${cohort}`,
+      records: [
+        {
+          value:
+            returned === undefined || Number.isNaN(returned)
+              ? `${formatAsPct(rate)} of ${formatAsNumber(released)}`
+              : `${formatAsPct(rate)}: ${formatAsNumber(
+                  returned
+                )} of ${formatAsNumber(released)}`,
+        },
+      ],
+    };
+  };
+
+  return (
+    <>
+      <MetricVizControls
+        filters={[
+          <FollowupPeriodFilterSelect metric={metric} />,
+          metric.returnType !== undefined && (
+            <ReturnTypeFilterSelect metric={metric} />
+          ),
+          includesDemographics && <DemographicFilterSelect metric={metric} />,
+        ]}
+        metric={metric}
+        smallData
+      />
+      <BarChartCluster
+        demographicView={demographicView}
+        data={toRateClusters(singleFollowupDemographics)}
+        accessors={visibleGroups}
+        getTooltipProps={getTooltipProps}
+        flatLabels
+        seriesColors={seriesColors}
+        showLegend={false}
+      />
+      {groups.length > 1 && (
+        <SeriesToggles
+          series={groups}
+          colorsBySeries={seriesColors}
+          counts={releasesByGroup}
+          hidden={hiddenGroups}
+          onToggle={toggleGroup}
+          legend="Show or hide groups (number of releases shown):"
+        />
+      )}
+      <ClusterNote>
+        Each column is the share of that release year&apos;s releases who
+        returned {withinYears}.
+        {groups.length > 1 &&
+          ` Rates for groups with few releases swing a lot from year to year; groups with fewer than ${SMALL_GROUP_RELEASES} releases start hidden.`}
+      </ClusterNote>
+      <VizNotes unknowns={unknowns} download={metric.download} />
+    </>
+  );
 };
 
 export default withMetricHydrator(observer(VizRecidivismRateSingleFollowup));

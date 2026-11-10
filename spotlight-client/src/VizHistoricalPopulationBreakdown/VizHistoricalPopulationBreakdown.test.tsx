@@ -78,6 +78,32 @@ test("renders total", async () => {
   ).toBeInTheDocument();
 });
 
+test("rendering a preview first does not remove the full chart's axis space", async () => {
+  // regression: the preview used to zero a shared margin object, so a full chart
+  // rendered afterwards (e.g. after navigating from a narrative preview) lost its axes
+  const getPlotOffsets = (container: HTMLElement) =>
+    Array.from(container.querySelectorAll("g.data-visualization"))
+      .map((el) => el.getAttribute("transform"))
+      .filter(Boolean);
+
+  const preview = renderWithStore(
+    <VizHistoricalPopulationBreakdown metric={metric} preview />,
+  );
+  await waitFor(() =>
+    expect(getPlotOffsets(preview.container).length).toBeGreaterThan(0),
+  );
+  expect(getPlotOffsets(preview.container)[0]).toBe("translate(0,8)");
+  preview.unmount();
+
+  const full = renderWithStore(
+    <VizHistoricalPopulationBreakdown metric={metric} />,
+  );
+  await waitFor(() =>
+    expect(getPlotOffsets(full.container).length).toBeGreaterThan(0),
+  );
+  expect(getPlotOffsets(full.container)[0]).toBe("translate(56,8)");
+});
+
 test("plots demographic categories", async () => {
   renderWithStore(<VizHistoricalPopulationBreakdown metric={metric} />);
 

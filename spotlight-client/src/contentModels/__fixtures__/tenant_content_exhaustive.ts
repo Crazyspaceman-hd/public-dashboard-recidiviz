@@ -205,6 +205,7 @@ const content: ExhaustiveTenantContent = {
       sections: [
         {
           title: "test first prison section",
+          dataSource: "synthetic",
           body: "test prison section copy",
           metricTypeId: "PrisonPopulationCurrent",
         },
@@ -218,6 +219,7 @@ const content: ExhaustiveTenantContent = {
       sections: [
         {
           title: "test first pretrial section",
+          dataSource: "synthetic",
           body: "test pretrial section copy",
           metricTypeId: "PretrialPopulationCurrent",
         },
@@ -231,6 +233,7 @@ const content: ExhaustiveTenantContent = {
       sections: [
         {
           title: "test first probation section",
+          dataSource: "synthetic",
           body: "test probation section copy",
           metricTypeId: "ProbationPopulationCurrent",
         },
@@ -244,6 +247,7 @@ const content: ExhaustiveTenantContent = {
       sections: [
         {
           title: "test first parole section",
+          dataSource: "synthetic",
           body: "test parole section copy",
           metricTypeId: "ParolePopulationCurrent",
         },
@@ -257,6 +261,7 @@ const content: ExhaustiveTenantContent = {
       sections: [
         {
           title: "test first sentencing section",
+          dataSource: "synthetic",
           body: "test sentencing section copy",
           metricTypeId: "SentencePopulationCurrent",
         },
@@ -270,10 +275,12 @@ const content: ExhaustiveTenantContent = {
         {
           id: "NORTHEAST",
           label: "Northeast",
+          group: "test group",
         },
         {
           id: "SOUTHWEST",
           label: "Southwest",
+          group: "test group",
         },
       ],
     },
@@ -283,10 +290,12 @@ const content: ExhaustiveTenantContent = {
         {
           id: "NORTHEAST",
           label: "Northeast",
+          group: "test group",
         },
         {
           id: "SOUTHWEST",
           label: "Southwest",
+          group: "test group",
         },
       ],
     },
@@ -296,10 +305,12 @@ const content: ExhaustiveTenantContent = {
         {
           id: "DWCRC",
           label: "Dakota Women's Correctional",
+          group: "test group",
         },
         {
           id: "NDSP",
           label: "North Dakota State Penitentiary",
+          group: "test group",
         },
       ],
     },
@@ -309,10 +320,12 @@ const content: ExhaustiveTenantContent = {
         {
           id: "NORTHEAST",
           label: "Northeast",
+          group: "test group",
         },
         {
           id: "SOUTHWEST",
           label: "Southwest",
+          group: "test group",
         },
       ],
     },
@@ -322,10 +335,12 @@ const content: ExhaustiveTenantContent = {
         {
           id: "parole a",
           label: "parole A",
+          group: "test group",
         },
         {
           id: "parole b",
           label: "parole B",
+          group: "test group",
         },
       ],
     },
@@ -335,34 +350,42 @@ const content: ExhaustiveTenantContent = {
         {
           id: "1",
           label: "Region A",
+          group: "test group",
         },
         {
           id: "2",
           label: "Region B",
+          group: "test group",
         },
         {
           id: "3",
           label: "Region C",
+          group: "test group",
         },
         {
           id: "4",
           label: "Region D",
+          group: "test group",
         },
         {
           id: "5",
           label: "Region E",
+          group: "test group",
         },
         {
           id: "6",
           label: "Region F",
+          group: "test group",
         },
         {
           id: "7",
           label: "Region G",
+          group: "test group",
         },
         {
           id: "8",
           label: "Region H",
+          group: "test group",
         },
       ],
     },
@@ -372,10 +395,12 @@ const content: ExhaustiveTenantContent = {
         {
           id: "101",
           label: "Facility A",
+          group: "test group",
         },
         {
           id: "201",
           label: "Facility B",
+          group: "test group",
         },
       ],
     },
@@ -398,6 +423,10 @@ const content: ExhaustiveTenantContent = {
       supervisionPopulation: "People subject to supervision",
       totalPopulationSentences: "All people sentenced and under DOCR control",
       revocationProportions: "Proportions of revocation reasons",
+      countyPopulation: "county population",
+      countyArrested: "county arrested",
+      countyFoundGuilty: "county found guilty",
+      countyUnderControl: "county under control",
     },
     introduction: `introduction {likelihoodVsWhite.BLACK} {likelihoodVsWhite.HISPANIC}
         {likelihoodVsWhite.AMERICAN_INDIAN_ALASKAN_NATIVE}`,
@@ -406,17 +435,27 @@ const content: ExhaustiveTenantContent = {
     sections: {
       beforeCorrections: {
         title: "beforeCorrections title",
+        dataSource: "synthetic",
         body: `beforeCorrections body {ethnonymCapitalized} {beforeCorrections.populationPctCurrent}
         {beforeCorrections.correctionsPctCurrent}`,
         methodology: "beforeCorrections methodology",
       },
+      countyExample: {
+        title: "countyExample title",
+        dataSource: "synthetic",
+        body: `countyExample body {countyExample.populationPct} {countyExample.arrestedPct}
+        {countyExample.foundGuiltyPct} {countyExample.underControlPct}`,
+        methodology: "countyExample methodology",
+      },
       conclusion: {
         title: "conclusion title",
+        dataSource: "synthetic",
         body: "conclusion body",
         methodology: "conclusion methodology",
       },
       sentencing: {
         title: "sentencing title",
+        dataSource: "synthetic",
         body: `sentencing body {ethnonym} {sentencing.incarcerationPctCurrent}
         {sentencing.probationPctCurrent} {sentencing.overall.incarcerationPctCurrent}
         {sentencing.overall.probationPctCurrent} {sentencing.comparison}`,
@@ -424,6 +463,7 @@ const content: ExhaustiveTenantContent = {
       },
       supervision: {
         title: "supervision title",
+        dataSource: "synthetic",
         body: `supervision body {supervisionType} {supervision.absconsionProportion36Mo}
         {supervision.newCrimeProportion36Mo} {supervision.technicalProportion36Mo}
         {supervision.populationProportion36Mo} {supervision.revocationProportion36Mo}
@@ -433,12 +473,14 @@ const content: ExhaustiveTenantContent = {
       },
       releasesToParole: {
         title: "releasesToParole title",
+        dataSource: "synthetic",
         body: `releasesToParole body {releasesToParole.paroleReleaseProportion36Mo}
         {releasesToParole.prisonPopulationProportion36Mo}`,
         methodology: "releasesToParole methodology",
       },
       programming: {
         title: "programming title",
+        dataSource: "synthetic",
         body: `programming body {programming.participantProportionCurrent}
         {programming.supervisionProportionCurrent} {programming.comparison}`,
         methodology: "programming methodology",

@@ -194,3 +194,40 @@ test("partially cached requests only fetch missed files", async () => {
     `${overlappingMetrics[1]}.json`
   );
 });
+
+describe("per-tenant demo data", () => {
+  test("a tenant with its own demo directory gets only its own data", async () => {
+    expect.hasAssertions();
+    const names = ["incarceration_population_by_facility_by_demographics"];
+    await fetchMetricsByName("US_FL", names, true, (err, results) => {
+      expect(err).toBeNull();
+      const records = results[names[0]];
+      expect(records.length).toBeGreaterThan(0);
+      expect(records.every((r) => r.state_code === "US_FL")).toBe(true);
+    });
+  });
+
+  test("a tenant with its own demo directory does not fall back to shared fixtures", async () => {
+    expect.hasAssertions();
+    await fetchMetricsByName(
+      "US_FL",
+      ["active_program_participation_by_region"],
+      true,
+      (err, results) => {
+        expect(results).toBeFalsy();
+        expect(err.code).toBe("ENOENT");
+      }
+    );
+  });
+
+  test("a tenant without its own demo directory still uses shared fixtures", async () => {
+    expect.hasAssertions();
+    const names = ["incarceration_population_by_facility_by_demographics"];
+    await fetchMetricsByName("US_ND", names, true, (err, results) => {
+      expect(err).toBeNull();
+      expect(results[names[0]]).toContainEqual(
+        getFirstRecordFromFixture(`${names[0]}.json`)
+      );
+    });
+  });
+});

@@ -18,7 +18,6 @@
 import {
   fireEvent,
   screen,
-  waitForElementToBeRemoved,
   within,
 } from "@testing-library/react";
 import { runInAction, when } from "mobx";
@@ -27,7 +26,9 @@ import DemographicsByCategoryMetric from "../contentModels/DemographicsByCategor
 import DataStore from "../DataStore";
 import { reactImmediately, renderWithStore } from "../testUtils";
 import { colors } from "../UiLibrary";
-import VizPrisonStayLengths from "./VizPrisonStayLengths";
+import VizPrisonStayLengths, {
+  toShareOfAllReleases,
+} from "./VizPrisonStayLengths";
 
 jest.mock("../MeasureWidth/MeasureWidth");
 
@@ -91,49 +92,51 @@ test("total chart", async () => {
   ).toBeInTheDocument();
 });
 
-test("demographic charts", async () => {
+test("demographic views are one grouped chart, with a column per group", async () => {
   renderWithStore(<VizPrisonStayLengths metric={metric} />);
 
   await when(() => !metric.isLoading);
 
-  const totalChart = screen.getByRole("group", {
-    name: "7 bars in a bar chart",
-  });
+  expect(
+    screen.getByRole("group", { name: "7 bars in a bar chart" }),
+  ).toBeInTheDocument();
 
   const menuButton = screen.getByRole("button", {
     name: "View Total",
   });
+
+  const expectGroupedChart = async (view: string): Promise<void> => {
+    // the grouped chart keeps one figure and cross-fades its contents,
+    // so wait for the figure to be labeled with the new view
+    await screen.findByRole("figure", { name: view });
+    // no small multiples: the per-group trellis charts are gone
+    expect(
+      screen.queryAllByRole("group", { name: "7 bars in a bar chart" }),
+    ).toHaveLength(0);
+    // every group in this view has a checked show/hide toggle
+    const groups = metric.dataSeries?.map(({ label }) => label) ?? [];
+    expect(groups.length).toBeGreaterThan(1);
+    groups.forEach((group) =>
+      expect(
+        screen.getByRole("checkbox", { name: new RegExp(`^${group}`) }),
+      ).toBeChecked(),
+    );
+  };
+
   fireEvent.click(menuButton);
   fireEvent.click(screen.getByRole("option", { name: "Race or Ethnicity" }));
-
-  // pause for animated transition
-  await waitForElementToBeRemoved(totalChart);
-
-  const raceCharts = screen.getAllByRole("group", {
-    name: "7 bars in a bar chart",
-  });
-  expect(raceCharts.length).toBe(5);
+  await expectGroupedChart("raceOrEthnicity");
+  expect(
+    screen.getByText(/share of all releases/),
+  ).toBeInTheDocument();
 
   fireEvent.click(menuButton);
   fireEvent.click(screen.getByRole("option", { name: "Gender" }));
-
-  // pause for animated transition
-  await waitForElementToBeRemoved(raceCharts[0]);
-
-  const genderCharts = screen.getAllByRole("group", {
-    name: "7 bars in a bar chart",
-  });
-  expect(genderCharts.length).toBe(2);
+  await expectGroupedChart("gender");
 
   fireEvent.click(menuButton);
   fireEvent.click(screen.getByRole("option", { name: "Age Group" }));
-
-  // pause for animated transition
-  await waitForElementToBeRemoved(genderCharts[0]);
-
-  expect(
-    screen.getAllByRole("group", { name: "7 bars in a bar chart" }).length,
-  ).toBe(7);
+  await expectGroupedChart("ageBucket");
 });
 
 test("all bars are the same color", async () => {
@@ -150,4 +153,53 @@ test("all bars are the same color", async () => {
     );
 
   expect.hasAssertions();
+});
+
+test("grouped columns are shares of all releases, not of each group", () => {
+  const record = (label: string, value: number) => ({
+    label,
+    value,
+    pct: 0,
+    color: "",
+  });
+  // a big group and a small group with the same within-group pattern
+  const rows = toShareOfAllReleases([
+    { label: "Big", records: [record("<1 year", 900), record("1–2", 100)] },
+    { label: "Small", records: [record("<1 year", 9), record("1–2", 1)] },
+  ]);
+  const underOneYear = rows.find(({ label }) => label === "<1 year");
+  // 900 of 1,010 releases vs 9 of 1,010: not 90% each
+  expect(underOneYear?.Big).toBeCloseTo(900 / 1010);
+  expect(underOneYear?.Small).toBeCloseTo(9 / 1010);
+  // every column across every stay length adds up to all releases
+  const total = rows.reduce(
+    (acc, row) => acc + Number(row.Big) + Number(row.Small),
+    0,
+  );
+  expect(total).toBeCloseTo(1);
+});
+
+test("group toggles hide columns and keep at least one group", async () => {
+  renderWithStore(<VizPrisonStayLengths metric={metric} />);
+  await when(() => !metric.isLoading);
+
+  fireEvent.click(screen.getByRole("button", { name: "View Total" }));
+  fireEvent.click(screen.getByRole("option", { name: "Gender" }));
+  await screen.findByRole("figure", { name: "gender" });
+
+  const [first, second] = metric.dataSeries?.map(({ label }) => label) ?? [];
+  const firstBox = screen.getByRole("checkbox", { name: new RegExp(`^${first}`) });
+  const secondBox = screen.getByRole("checkbox", {
+    name: new RegExp(`^${second}`),
+  });
+
+  fireEvent.click(firstBox);
+  expect(firstBox).not.toBeChecked();
+  // the only group still shown cannot be hidden
+  expect(secondBox).toBeChecked();
+  expect(secondBox).toBeDisabled();
+
+  fireEvent.click(firstBox);
+  expect(firstBox).toBeChecked();
+  expect(secondBox).toBeEnabled();
 });

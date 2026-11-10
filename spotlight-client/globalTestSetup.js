@@ -5,8 +5,10 @@ const waitForLocalhost = require("wait-for-localhost");
 
 module.exports = async () => {
   // start the API test server. save reference so we can kill it in teardown
+  // on Windows, `yarn` is a .cmd shim that can only be launched through a shell
   global.TEST_SERVER = spawn("yarn", ["start-test-server"], {
     cwd: resolve(__dirname, "../spotlight-api"),
+    shell: process.platform === "win32",
   });
 
   // set the timezone for all tests to UTC for consistency across environments

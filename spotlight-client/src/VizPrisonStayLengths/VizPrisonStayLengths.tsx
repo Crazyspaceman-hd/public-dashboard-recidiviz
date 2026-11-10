@@ -15,7 +15,9 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 // =============================================================================
 
+import { sum } from "d3-array";
 import { observer } from "mobx-react-lite";
+import { rem } from "polished";
 import React from "react";
 import { animated, useTransition } from "react-spring/web.cjs";
 import styled from "styled-components/macro";
@@ -25,17 +27,57 @@ import {
   singleChartHeight,
   TooltipContentFunction,
 } from "../charts";
+import {
+  BarChartCluster,
+  BarChartClusterRecord,
+} from "../charts/BarChartCluster";
+import SeriesToggles, {
+  seriesColorMap,
+  useHiddenSeries,
+} from "../charts/SeriesToggles";
 import DemographicsByCategoryMetric from "../contentModels/DemographicsByCategoryMetric";
+import { DemographicCategoryRecords } from "../contentModels/types";
 import DemographicFilterSelect from "../DemographicFilterSelect";
 import MetricVizControls from "../MetricVizControls";
 import { prisonStayLengthFields } from "../metricsApi";
-import { animation, AutoHeightTransition } from "../UiLibrary";
+import { animation, AutoHeightTransition, colors } from "../UiLibrary";
 import withMetricHydrator from "../withMetricHydrator";
 import VizNotes from "../VizNotes";
 
 const ChartsWrapper = styled.div`
   position: relative;
 `;
+
+const ClusterNote = styled.p`
+  color: ${colors.caption};
+  font-size: ${rem(13)};
+  margin-top: ${rem(8)};
+`;
+
+// the first category already includes "year"; the rest are bare ranges
+const stayLengthTitle = (label: string) =>
+  label !== prisonStayLengthFields[0].categoryLabel ? `${label} years` : label;
+
+/**
+ * Turns per-group stay-length counts into grouped-column rows where every value is
+ * that group's share of all releases across the groups shown (not of the group's own
+ * releases), so a stay length's columns sum to its overall share.
+ */
+export function toShareOfAllReleases(
+  dataSeries: DemographicCategoryRecords[]
+): BarChartClusterRecord[] {
+  const allReleases = sum(
+    dataSeries.flatMap(({ records }) => records.map(({ value }) => value))
+  );
+  return prisonStayLengthFields.map(({ categoryLabel }) => {
+    const row: BarChartClusterRecord = { label: categoryLabel };
+    dataSeries.forEach(({ label, records }) => {
+      const count = records.find((r) => r.label === categoryLabel)?.value ?? 0;
+      row[label] = allReleases ? count / allReleases : 0;
+    });
+    return row;
+  });
+}
 
 const getTooltipProps: TooltipContentFunction = (columnData) => {
   const {
@@ -73,6 +115,9 @@ const VizPrisonStayLengths: React.FC<VizPrisonStayLengthsProps> = ({
 }) => {
   const { dataSeries, demographicView, unknowns } = metric;
 
+  // groups the reader has unchecked; every group is shown again on a new view
+  const [hiddenGroups, toggleGroup] = useHiddenSeries(demographicView);
+
   const chartTransitions = useTransition(
     { demographicView, dataSeries },
     (item) => item.demographicView,
@@ -83,6 +128,70 @@ const VizPrisonStayLengths: React.FC<VizPrisonStayLengthsProps> = ({
     throw new Error(
       "Unable to display this metric without demographic filter."
     );
+
+  if (dataSeries && demographicView !== "total") {
+    // one cluster per stay length, one column per demographic group; every column is
+    // that group's share of ALL releases, so column heights reflect real counts
+    const groups = dataSeries.map(({ label }) => label);
+    // shares stay relative to ALL releases even when groups are hidden; hiding a
+    // big group only rescales the axis so the small groups become readable
+    const clusters = toShareOfAllReleases(dataSeries);
+    const visibleGroups = groups.filter((g) => !hiddenGroups.includes(g));
+    const seriesColors = seriesColorMap(groups);
+    const groupTotals = Object.fromEntries(
+      dataSeries.map(({ label, records }) => [
+        label,
+        sum(records, ({ value }) => value),
+      ])
+    );
+
+    const getClusterTooltipProps: TooltipContentFunction = (columnData) => {
+      const group = String(columnData.rName);
+      const row = columnData.data as BarChartClusterRecord;
+      const stayLength = String(row.label);
+      const count =
+        dataSeries
+          .find(({ label }) => label === group)
+          ?.records.find(({ label }) => label === stayLength)?.value ?? 0;
+      return {
+        title: `${group}: ${stayLengthTitle(stayLength)}`,
+        records: [{ pct: Number(row[group]) || 0, value: count }],
+      };
+    };
+
+    return (
+      <>
+        <MetricVizControls
+          filters={[<DemographicFilterSelect metric={metric} />]}
+          metric={metric}
+          smallData
+        />
+        <BarChartCluster
+          demographicView={demographicView}
+          data={clusters}
+          accessors={visibleGroups}
+          getTooltipProps={getClusterTooltipProps}
+          flatLabels
+          seriesColors={seriesColors}
+          showLegend={false}
+        />
+        <SeriesToggles
+          series={groups}
+          colorsBySeries={seriesColors}
+          counts={groupTotals}
+          hidden={hiddenGroups}
+          onToggle={toggleGroup}
+          legend="Show or hide groups (number of releases shown):"
+        />
+        <ClusterNote>
+          Each column is that group&apos;s share of all releases, so the columns
+          for a stay length add up to its overall share. Hide large groups to
+          zoom in on smaller ones; their values do not change.
+        </ClusterNote>
+        <VizNotes unknowns={unknowns} download={metric.download} />
+      </>
+    );
+  }
 
   if (dataSeries) {
     return (

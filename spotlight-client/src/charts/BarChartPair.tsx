@@ -24,8 +24,9 @@ import { DemographicCategoryRecords, Unknowns } from "../contentModels/types";
 import VizControls, { VizControlsProps } from "../VizControls";
 import VizNotes from "../VizNotes";
 
-const CHART_HEIGHT = 165;
-const CHART_HEIGHT_MOBILE = 100;
+// short enough that the two bars sit close and their edges can be compared directly
+const CHART_HEIGHT = 80;
+const CHART_HEIGHT_MOBILE = 56;
 
 const CHART_HEIGHT_PREVIEW = 420;
 const CHART_HEIGHT_PREVIEW_MOBILE = 300;
@@ -95,21 +96,24 @@ export default function BarChartPair({
           smallData={!preview}
         />
       )}
-      <ProportionalBar
-        data={data[0].records}
-        title={data[0].label}
-        height={chartHeight}
-        highlighted={highlightedCategory}
-        showLegend={false}
-      />
-      <Spacer />
-      <ProportionalBar
-        data={data[1].records}
-        title={data[1].label}
-        height={chartHeight}
-        highlighted={highlightedCategory}
-        setHighlighted={setHighlightedCategory}
-      />
+      {/* usually a pair, but any number of stages can be stacked (e.g. population,
+          arrests, corrections); only the last bar carries the legend */}
+      {data.map((series, index) => {
+        const last = index === data.length - 1;
+        return (
+          <React.Fragment key={series.label}>
+            {index > 0 && <Spacer />}
+            <ProportionalBar
+              data={series.records}
+              title={series.label}
+              height={chartHeight}
+              highlighted={highlightedCategory}
+              setHighlighted={last ? setHighlightedCategory : undefined}
+              showLegend={last}
+            />
+          </React.Fragment>
+        );
+      })}
       {unknowns && <VizNotes unknowns={unknowns} download={download} />}
     </Wrapper>
   );

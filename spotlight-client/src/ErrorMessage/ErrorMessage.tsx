@@ -15,15 +15,36 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 // =============================================================================
 
+import { rem } from "polished";
 import React from "react";
 import { FallbackProps } from "react-error-boundary";
-import { CopyBlock, PageSection, PageTitle } from "../UiLibrary";
+import styled from "styled-components/macro";
+import {
+  colors,
+  CopyBlock,
+  PageSection,
+  PageTitle,
+  UnStyledButton,
+} from "../UiLibrary";
 
-const ErrorMessage: React.FC<FallbackProps> = ({ error }) => {
+const RetryButton = styled(UnStyledButton)`
+  border: 1px solid ${colors.text};
+  border-radius: ${rem(4)};
+  margin-top: ${rem(24)};
+  padding: ${rem(8)} ${rem(16)};
+`;
+
+const ErrorMessage: React.FC<FallbackProps> = ({
+  error,
+  resetErrorBoundary,
+}) => {
   return (
     <PageSection>
       <PageTitle>An error has occurred.</PageTitle>
       <CopyBlock>{error?.message}</CopyBlock>
+      {resetErrorBoundary && (
+        <RetryButton onClick={resetErrorBoundary}>Try again</RetryButton>
+      )}
     </PageSection>
   );
 };

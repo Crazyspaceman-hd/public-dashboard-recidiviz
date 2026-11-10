@@ -30,6 +30,20 @@ import { DemographicCategoryRateRecords, UnknownsByCohort } from "./types";
 
 type CohortDataSeries = DataSeries<RateFields & { followupYears: number }>;
 
+/** One point of the combined ("pooled") cumulative recidivism curve. */
+export type PooledRecidivismPoint = {
+  followupYears: number;
+  /** all included release years' returns / all their releases */
+  rate: number;
+  /** lowest and highest single-release-year rate at this point */
+  min: number;
+  max: number;
+  releases: number;
+  returned: number;
+  /** release years that have been followed this long */
+  cohorts: number[];
+};
+
 /**
  * Adds a zero record for followup period zero to an array of records.
  * These are not in the raw data but the UI needs them.
@@ -76,6 +90,7 @@ export default class RecidivismRateMetric extends Metric<RecidivismRateRecord> {
       highlightedCohort: observable,
       includesDemographics: computed,
       maxFollowupPeriod: computed,
+      pooledCurve: computed,
       returnType: observable,
       selectedCohorts: computed,
       setHighlightedCohort: action,
@@ -239,6 +254,58 @@ export default class RecidivismRateMetric extends Metric<RecidivismRateRecord> {
         coordinates,
       };
     });
+  }
+
+  /**
+   * One cumulative curve combining every release year, weighted by releases:
+   * at each follow-up year, the total returned divided by the total released, over
+   * the release years that have been followed that long. Uses statewide totals
+   * (no demographic breakdown) and respects the return type filter, if any.
+   */
+  get pooledCurve(): PooledRecidivismPoint[] | undefined {
+    const { allRecords, returnType } = this;
+    if (!allRecords) return undefined;
+
+    const totals = allRecords.filter(
+      (record) =>
+        recordIsTotalByDimension("total")(record) &&
+        (returnType === undefined || record.returnType === returnType),
+    );
+    if (!totals.length) return undefined;
+
+    const points = groups(totals, (r) => r.followupYears)
+      .map(([followupYears, records]) => {
+        const releases = records.reduce((s, r) => s + r.rateDenominator, 0);
+        const returned = records.reduce((s, r) => s + r.rateNumerator, 0);
+        // derive each year's rate from its counts, like the combined rate, so the line
+        // always sits inside the band even if a stored rate disagrees with its counts
+        const rates = records.map((r) =>
+          r.rateDenominator ? r.rateNumerator / r.rateDenominator : r.rate,
+        );
+        return {
+          followupYears,
+          rate: releases ? returned / releases : 0,
+          min: Math.min(...rates),
+          max: Math.max(...rates),
+          releases,
+          returned,
+          cohorts: records.map((r) => r.releaseCohort).sort(ascending),
+        };
+      })
+      .sort((a, b) => ascending(a.followupYears, b.followupYears));
+
+    return [
+      {
+        followupYears: 0,
+        rate: 0,
+        min: 0,
+        max: 0,
+        releases: points[0]?.releases ?? 0,
+        returned: 0,
+        cohorts: points[0]?.cohorts ?? [],
+      },
+      ...points,
+    ];
   }
 
   get unknowns(): UnknownsByCohort | undefined {

@@ -20,6 +20,8 @@ import { UseSelectReturnValue } from "downshift";
 export type DropdownOption = {
   id: string;
   label: string;
+  // optional section heading; used by SearchableDropdown
+  group?: string;
 };
 
 export type DropdownCommonProps = {

@@ -1,3 +1,54 @@
+This repo is a fork done by Henry Deane that introduces Florida based data as well as chart decision changes for clarity and basic trouble shooting.
+
+# Base level fixes
+* Reworked drop down menu for facilities to seperate by category starting with prisons to make it easier to locate specific facilities.
+
+* Resolved a load order bug that caused the "How has the prison population changed over time?" chart to load without margins, margins are now fixed for the chart in that location but still not visible on the landing page by design.
+
+* ~~Added snapping to next and previous section similar to the functionality of already existing buttons~~ \
+Tried it, didn't feel like it solved anything, removed it.
+
+* Fixed an issue where selecting a category that had no data errored out the whole site until forced refresh, now empty categories are excluded from the drop down list and errors are resolved on one page.
+
+* Added clarifying language under bar charts to communicate meaning of striped texture.
+
+
+# Chart decisions
+
+### How long are they there?
+Before: Selecting from dropdown spawned seperate charts for each category.
+
+Now: Using grouped columns keeps all the data on one chart, adding check boxes allows for fine tuning without requiring another drop down.
+![How Long are they there grouped columns](images/long_grouped_columns.png)
+
+
+### How many people come back to prison?
+Before: Lots of lines, all at the bottom half of the chart, crowding causes confusion and blocks the message.
+![How many people come back to prison-old](images/come_back_orig.png)
+
+
+Now: Single line shows throughput, shaded area shows variation, no unused upper white space. Unfortunately the main take away is the recidivism rate is pretty stable.
+![How many people come back to prison-new](images/come_back_single.png)
+
+### How has the recidivism rate changed over time?
+Before: Lots of white space, secondary drop down creates multiple charts.
+![How has the recidivism rate changed over time-old](images/original-recidivism-over-time-trellis.jpg)
+
+Now: Grouped columns highlight breakout demographics and check boxes allow for finer control. Similar setup to *How long are they there*
+![How has the recidivism rate changed over time-new](images/recidivism_over_time_grouped.png)
+
+
+### How many people finish probation successfully?
+Before: Not a chart problem, an organizational problem, placing the percentages under the chart implies a stronger connection between the data and a lack of labels leaves the user to determine what that connection is.
+![How many people finish probation successfully?](images/finish_successfully_before.png)
+
+Now: Definite seperation including labels to idenfity the percentage as an aggregate success rate and the bar chart as a monthly breakdown.
+![How many people finish probation successfully?](images/finish_successfully_now.png)
+
+
+## That's all I've got 
+I started to dive deeper into the Florida data and ran into the very reason for this organization, it's incredibly fractured. Better organized and accessible data could highlight which strategies are working, expose biases, and streamline the process of getting people out of the system when they deserve to be out.
+
 # Spotlight
 
 This repository contains npm packages related to our Spotlight data publishing product, as well as some shared configuration and tooling that involves multiple packages.

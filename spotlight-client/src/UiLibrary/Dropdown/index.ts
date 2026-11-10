@@ -17,3 +17,4 @@
 
 export { default as Dropdown } from "./Dropdown";
 export { default as DropdownMultiple } from "./DropdownMultiple";
+export { default as SearchableDropdown } from "./SearchableDropdown";

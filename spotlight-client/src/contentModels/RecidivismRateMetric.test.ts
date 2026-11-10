@@ -174,6 +174,34 @@ describe("cohorts data series", () => {
   });
 });
 
+describe("pooled curve", () => {
+  test("combines release years weighted by releases", async () => {
+    const metric = await getPopulatedMetric("PrisonRecidivismRateHistorical");
+    const curve = metric.pooledCurve;
+    expect(curve).toBeDefined();
+    // in the default "total" view, records are exactly the statewide totals
+    expect(metric.demographicView).toBe("total");
+    const records = metric.records ?? [];
+    if (!curve) return;
+
+    expect(curve[0]).toMatchObject({ followupYears: 0, rate: 0, min: 0, max: 0 });
+
+    curve.slice(1).forEach((point) => {
+      const totals = records.filter(
+        (r) => r.followupYears === point.followupYears,
+      );
+      const releases = totals.reduce((s, r) => s + r.rateDenominator, 0);
+      const returned = totals.reduce((s, r) => s + r.rateNumerator, 0);
+      expect(point.releases).toBe(releases);
+      expect(point.returned).toBe(returned);
+      expect(point.rate).toBeCloseTo(returned / releases);
+      expect(point.min).toBeLessThanOrEqual(point.rate);
+      expect(point.max).toBeGreaterThanOrEqual(point.rate);
+      expect(point.cohorts.length).toBe(totals.length);
+    });
+  });
+});
+
 test("no unknowns", async () => {
   const metric = await getPopulatedMetric("PrisonRecidivismRateHistorical");
 
